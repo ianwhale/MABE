@@ -273,3 +273,8 @@ __pycache__/
 
 ### VisualStudio Patch ###
 build/
+
+### Project Specific ###
+MABE.sln
+MABE.vcxproj
+MABE.vcxproj.filters
