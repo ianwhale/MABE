@@ -18,11 +18,16 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 
 	// We'll treat hidden nodes as inputs and output node types (TODO: for now...)
 	ann.AddNeuronGroup(_nrInNodes + _nrHiddenNodes, NeuronGroup::Type::INPUT);
+
+	// Initialize hidden layer ??
+
 	ann.AddNeuronGroup(_nrOutNodes + _nrHiddenNodes, NeuronGroup::Type::OUTPUT);
 }
 
 void RAAHNBrain::update() 
 {
+
+
 	ann.PropagateSignal();
 	ann.Train();
 }
@@ -34,6 +39,9 @@ string RAAHNBrain::description()
 
 DataMap RAAHNBrain::getStats()
 {
+	// Stats we may want:
+	// Hidden layer stats: number of nodes, connections, their weights, etc...
+
 	return DataMap();
 }
 
