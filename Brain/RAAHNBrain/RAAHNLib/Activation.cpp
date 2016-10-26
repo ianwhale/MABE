@@ -1,4 +1,5 @@
 #include "Activation.h"
+
 #include <math.h>
 
 double Activation::Logistic(double x)

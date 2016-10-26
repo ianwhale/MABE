@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../Utilities/Random.h"
 #include "ConnectionGroup.h"
 #include "NeuronGroup.h"
 #include "TrainingMethod.h"
@@ -11,7 +12,6 @@
 using std::deque;
 using std::queue;
 using std::vector;
-using std::uniform_real_distribution; using std::default_random_engine;
 
 
 class NeuralNetwork
@@ -32,13 +32,6 @@ public:
 	const double DOUBLE_MAGNITUDE = 2.0;
 	const double WEIGHT_RANGE_SCALE = 6.0;
 	const double DOUBLE_WEIGHT_RANGE = 2.0;
-
-
-	// replacement of Random.NextDouble()
-	// default initialization gives us values in the range [0, 1) which is desired
-	uniform_real_distribution<double> rand;
-	default_random_engine eng;
-
 
 	bool useNovelty;
 	//Default to using the logistic function.
@@ -273,7 +266,7 @@ public:
 
 	// ADDED HELPERS
 	double NextDouble() {
-		return rand(eng);
+		return Random::getDouble(1);
 	}
 
 	double getOutputNoiseRange() {
@@ -325,7 +318,7 @@ private:
 	double outputNoiseRange;
 	double weightNoiseRange;
 	double averageError;
-	vector<vector<NeuronGroup*>> allListGroups;
+	vector<vector<NeuronGroup*>*> allListGroups;
 	vector<NeuronGroup*> inputGroups;
 	vector<NeuronGroup*> hiddenGroups;
 	vector<NeuronGroup*> outputGroups;

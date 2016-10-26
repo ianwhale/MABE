@@ -1,4 +1,5 @@
 #include "ModulationSignal.h"
+
 #include <vector>
 
 using std::vector;

@@ -24,7 +24,7 @@ public:
 		Type type;
 
 
-		// TODO: verify that this is not breaking things
+		// TODO: veryify that this is not breaking things
 		bool operator==(const Identifier &other) {
 			return (index == other.index && type == other.type);
 		}

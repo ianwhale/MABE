@@ -16,12 +16,35 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 
 	NeuralNetwork ann;
 
-	// We'll treat hidden nodes as inputs and output node types (TODO: for now...)
-	ann.AddNeuronGroup(_nrInNodes + _nrHiddenNodes, NeuronGroup::Type::INPUT);
+	// Initialize groups.
+	int input_idx = ann.AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
+	int hidden_idx = ann.AddNeuronGroup(10, NeuronGroup::Type::HIDDEN); // TODO: Temp...
+	int output_idx = ann.AddNeuronGroup(_nrOutNodes, NeuronGroup::Type::OUTPUT);
 
-	// Initialize hidden layer ??
+	NeuronGroup::Identifier input;
+	input.index = input_idx;
+	input.type = NeuronGroup::Type::INPUT;
 
-	ann.AddNeuronGroup(_nrOutNodes + _nrHiddenNodes, NeuronGroup::Type::OUTPUT);
+	NeuronGroup::Identifier hidden;
+	hidden.index = hidden_idx;
+	hidden.type = NeuronGroup::Type::HIDDEN;
+
+	NeuronGroup::Identifier output;
+	output.index = output_idx;
+	output.type = NeuronGroup::Type::OUTPUT;
+
+	// Use Hebbian training method. 
+	ConnectionGroup::TrainFunctionType trainMethod = TrainingMethod::HebbianTrain;
+
+	unsigned modSig = ModulationSignal::AddSignal();
+
+	// Connect the groups.
+	ann.ConnectGroups(&input, &hidden, trainMethod, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann.ConnectGroups(&hidden, &output, trainMethod, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+
+	// Add noise.
+	ann.SetOutputNoiseMagnitude(DEFAULT_OUTPUT_NOISE_MAGNITUDE);
+	ann.SetWeightNoiseMagnitude(DEFAULT_WEIGHT_NOISE_MAGNITUDE);
 }
 
 void RAAHNBrain::update() 
@@ -30,11 +53,13 @@ void RAAHNBrain::update()
 
 	ann.PropagateSignal();
 	ann.Train();
+
+	nodes = nextNodes;
 }
 
 string RAAHNBrain::description()
 {
-	return string();
+	return "RAAHN Brain\n";
 }
 
 DataMap RAAHNBrain::getStats()
