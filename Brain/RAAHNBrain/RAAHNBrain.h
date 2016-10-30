@@ -32,12 +32,13 @@ public:
 	virtual shared_ptr<AbstractBrain> makeBrainFromGenome(shared_ptr<AbstractGenome> _genome) override;
 	virtual void initalizeGenome(shared_ptr<AbstractGenome> _genome) override;
 
-	inline shared_ptr<AbstractBrain> RAAHNBrain_Factory(int ins, int outs, int hidden, shared_ptr<ParametersTable> PT) {
-		return make_shared<RAAHNBrain>(ins, outs, hidden, PT);
-	}
-
 private:
 
+	int output_idx;
 	NeuralNetwork ann;
 };
+
+inline shared_ptr<AbstractBrain> RAAHNBrain_brainFactory(int ins, int outs, int hidden, shared_ptr<ParametersTable> PT) {
+	return make_shared<RAAHNBrain>(ins, outs, hidden, PT);
+}
 

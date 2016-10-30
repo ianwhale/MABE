@@ -10,16 +10,18 @@
 
 #include "RAAHNBrain.h"
 #include "./RAAHNLib/NeuronGroup.h"
+#include <cmath>
+#include <iostream>
+
+using namespace std;
 
 RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT) :
 	AbstractBrain(_nrInNodes, _nrOutNodes, _nrHiddenNodes, _PT) {
-
-	NeuralNetwork ann;
-
 	// Initialize groups.
-	int input_idx = ann.AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
+	// In order to keep with MABE convention, we'll treat hidden nodes as inputs and outputs. (TODO: Perhaps this is overkill since we have history buffer...)
+	int input_idx = ann.AddNeuronGroup(_nrInNodes + _nrHiddenNodes, NeuronGroup::Type::INPUT);
 	int hidden_idx = ann.AddNeuronGroup(10, NeuronGroup::Type::HIDDEN); // TODO: Temp...
-	int output_idx = ann.AddNeuronGroup(_nrOutNodes, NeuronGroup::Type::OUTPUT);
+	output_idx = ann.AddNeuronGroup(_nrOutNodes + _nrHiddenNodes, NeuronGroup::Type::OUTPUT);
 
 	NeuronGroup::Identifier input;
 	input.index = input_idx;
@@ -47,14 +49,45 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	ann.SetWeightNoiseMagnitude(DEFAULT_WEIGHT_NOISE_MAGNITUDE);
 }
 
+void printNodes(vector<double> &print_me)
+{
+	for (auto thing : print_me) {
+		cout << thing << " ";
+	}
+	cout << endl;
+}
+
 void RAAHNBrain::update() 
 {
+	vector<double> inputs_and_hidden;
 
+	for (int i = 0; i < nrInNodes; i++) // Get inputs.
+	{ 
+		inputs_and_hidden.push_back(nodes[i]);
+	}
+	for (unsigned i = nrInNodes + nrOutNodes - 1; i < nodes.size(); i++) 
+	{
+		inputs_and_hidden.push_back(nodes[i]);
+	}
+
+	//cout << "Inputs:"; printNodes(nodes);
+
+	ann.AddExperience(inputs_and_hidden);
 
 	ann.PropagateSignal();
-	ann.Train();
 
-	nodes = nextNodes;
+	double out;
+	int neuron_iter = 0;
+
+	// Set the results. 
+	for (unsigned i = nrInNodes - 1; i < nodes.size(); i++)
+	{
+		out = ann.GetOutputValue(output_idx, neuron_iter);
+		nodes[i] = out;
+		neuron_iter++;
+	}
+
+	//cout << "Outputs: "; printNodes(nodes);
 }
 
 string RAAHNBrain::description()
@@ -72,9 +105,11 @@ DataMap RAAHNBrain::getStats()
 
 shared_ptr<AbstractBrain> RAAHNBrain::makeBrainFromGenome(shared_ptr<AbstractGenome> _genome)
 {
-	return shared_ptr<AbstractBrain>();
+	// TODO: Temp
+	return make_shared<RAAHNBrain>(RAAHNBrain(nrInNodes, nrOutNodes, nrHiddenNodes, PT));
 }
 
 void RAAHNBrain::initalizeGenome(shared_ptr<AbstractGenome> _genome)
 {
+	// TODO: Temp
 }

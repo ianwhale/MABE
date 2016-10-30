@@ -5,7 +5,6 @@
 #include <algorithm>
 
 using std::vector;
-using std::default_random_engine; using std::uniform_real_distribution;
 using std::sort;
 
 NeuralNetwork::NeuralNetwork()
