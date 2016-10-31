@@ -18,10 +18,9 @@ using namespace std;
 RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT) :
 	AbstractBrain(_nrInNodes, _nrOutNodes, _nrHiddenNodes, _PT) {
 	// Initialize groups.
-	// In order to keep with MABE convention, we'll treat hidden nodes as inputs and outputs. (TODO: Perhaps this is overkill since we have history buffer...)
-	int input_idx = ann.AddNeuronGroup(_nrInNodes + _nrHiddenNodes, NeuronGroup::Type::INPUT);
-	int hidden_idx = ann.AddNeuronGroup(10, NeuronGroup::Type::HIDDEN); // TODO: Temp...
-	output_idx = ann.AddNeuronGroup(_nrOutNodes + _nrHiddenNodes, NeuronGroup::Type::OUTPUT);
+	int input_idx = ann.AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
+	int hidden_idx = ann.AddNeuronGroup(5, NeuronGroup::Type::HIDDEN); 
+	output_idx = ann.AddNeuronGroup(_nrOutNodes, NeuronGroup::Type::OUTPUT);
 
 	NeuronGroup::Identifier input;
 	input.index = input_idx;
@@ -35,14 +34,14 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	output.index = output_idx;
 	output.type = NeuronGroup::Type::OUTPUT;
 
-	// Use Hebbian training method. 
-	ConnectionGroup::TrainFunctionType trainMethod = TrainingMethod::HebbianTrain;
+	ConnectionGroup::TrainFunctionType hebbTrain = TrainingMethod::HebbianTrain;
+	ConnectionGroup::TrainFunctionType autoTrain = TrainingMethod::AutoencoderTrain;
 
 	unsigned modSig = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann.ConnectGroups(&input, &hidden, trainMethod, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
-	ann.ConnectGroups(&hidden, &output, trainMethod, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann.ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann.ConnectGroups(&hidden, &output, hebbTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
 
 	// Add noise.
 	ann.SetOutputNoiseMagnitude(DEFAULT_OUTPUT_NOISE_MAGNITUDE);
