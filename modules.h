@@ -20,6 +20,7 @@
 #include "Genome/CircularGenome/CircularGenome.h"
 #include "Genome/MultiGenome/MultiGenome.h"
 #include "Brain/MarkovBrain/MarkovBrain.h"
+#include "Brain/RAAHNBrain/RAAHNBrain.h"
 #include "Brain/ConstantValuesBrain/ConstantValuesBrain.h"
 #include "Brain/HumanBrain/HumanBrain.h"
 #include "Brain/WireBrain/WireBrain.h"
@@ -142,8 +143,16 @@ shared_ptr<AbstractBrain> makeTemplateBrain(shared_ptr<AbstractWorld> world, sha
   bool found = false;
   string brainType = (PT == nullptr) ? AbstractBrain::brainTypeStrPL->lookup() : PT->lookupString("BRAIN-brainType");
   int hiddenNodes = (PT == nullptr) ? AbstractBrain::hiddenNodesPL->lookup() : PT->lookupInt("BRAIN-hiddenNodes");
+
+  return RAAHNBrain_brainFactory(world->requiredInputs(), world->requiredOutputs(), hiddenNodes, PT);
+
   if (brainType == "Markov") {
     newBrain = MarkovBrain_brainFactory(world->requiredInputs(), world->requiredOutputs(), hiddenNodes,PT);
+    found = true;
+    }
+  if (brainType == "RAAHN") {
+
+    newBrain = RAAHNBrain_brainFactory(world->requiredInputs(), world->requiredOutputs(), hiddenNodes,PT);
     found = true;
     }
   if (brainType == "ConstantValues") {
@@ -169,7 +178,7 @@ shared_ptr<AbstractBrain> makeTemplateBrain(shared_ptr<AbstractWorld> world, sha
 //configure Defaults and Documentation
 void configureDefaultsAndDocumentation(){
   Parameters::root->setParameter("BRAIN-brainType", (string)"Markov");
-  Parameters::root->setDocumentation("BRAIN-brainType", "brain to be used, [Markov, ConstantValues, Human, Wire]");
+  Parameters::root->setDocumentation("BRAIN-brainType", "brain to be used, [Markov, RAAHN, ConstantValues, Human, Wire]");
 
   Parameters::root->setParameter("GENOME-genomeType", (string)"Circular");
   Parameters::root->setDocumentation("GENOME-genomeType", "genome to be used, [Circular, Multi]");
