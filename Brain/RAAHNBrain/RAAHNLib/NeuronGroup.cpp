@@ -1,4 +1,4 @@
-#include "NeuralNetwork.h"
+﻿#include "NeuralNetwork.h"
 #include "NeuronGroup.h"
 #include "ConnectionGroup.h"
 #include "TrainingMethod.h"

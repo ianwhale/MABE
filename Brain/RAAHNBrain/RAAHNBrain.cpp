@@ -19,7 +19,13 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	AbstractBrain(_nrInNodes, _nrOutNodes, _nrHiddenNodes, _PT) {
 	// Initialize groups.
 	int input_idx = ann.AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
-	int hidden_idx = ann.AddNeuronGroup(5, NeuronGroup::Type::HIDDEN); 
+
+	int hiddenLayer = 5;
+	if (_nrInNodes <= 5) {
+		hiddenLayer = _nrInNodes - 1;
+	}
+
+	int hidden_idx = ann.AddNeuronGroup(hiddenLayer, NeuronGroup::Type::HIDDEN); 
 	output_idx = ann.AddNeuronGroup(_nrOutNodes, NeuronGroup::Type::OUTPUT);
 
 	NeuronGroup::Identifier input;
@@ -58,20 +64,14 @@ void printNodes(vector<double> &print_me)
 
 void RAAHNBrain::update() 
 {
-	vector<double> inputs_and_hidden;
+	vector<double> inputs;
 
-	for (int i = 0; i < nrInNodes; i++) // Get inputs.
+	for (int i = 0; i < nrInNodes - 1; i++) // Get inputs.
 	{ 
-		inputs_and_hidden.push_back(nodes[i]);
-	}
-	for (unsigned i = nrInNodes + nrOutNodes - 1; i < nodes.size(); i++) 
-	{
-		inputs_and_hidden.push_back(nodes[i]);
+		inputs.push_back(nodes[inputNodesList[i]]);
 	}
 
-	//cout << "Inputs:"; printNodes(nodes);
-
-	ann.AddExperience(inputs_and_hidden);
+	ann.AddExperience(inputs);
 
 	ann.PropagateSignal();
 
@@ -79,14 +79,12 @@ void RAAHNBrain::update()
 	int neuron_iter = 0;
 
 	// Set the results. 
-	for (unsigned i = nrInNodes - 1; i < nodes.size(); i++)
+	for (int i = 0; i < nrOutNodes; i++)
 	{
 		out = ann.GetOutputValue(output_idx, neuron_iter);
-		nodes[i] = out;
+		nodes[outputNodesList[i]] = round(out); // Binary output for some worlds might not be the desired output... 
 		neuron_iter++;
 	}
-
-	//cout << "Outputs: "; printNodes(nodes);
 }
 
 string RAAHNBrain::description()
@@ -105,7 +103,7 @@ DataMap RAAHNBrain::getStats()
 shared_ptr<AbstractBrain> RAAHNBrain::makeBrainFromGenome(shared_ptr<AbstractGenome> _genome)
 {
 	// TODO: Temp
-	return make_shared<RAAHNBrain>(RAAHNBrain(nrInNodes, nrOutNodes, nrHiddenNodes, PT));
+	return make_shared<RAAHNBrain>(nrInNodes, nrOutNodes, nrHiddenNodes, PT);
 }
 
 void RAAHNBrain::initalizeGenome(shared_ptr<AbstractGenome> _genome)
