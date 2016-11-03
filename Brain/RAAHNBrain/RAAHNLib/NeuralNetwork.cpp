@@ -507,6 +507,7 @@ void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, vecto
 		newDes->distance = distDescriptions[i]->distance;
 		newDes->distanceOwner = newOccupant;
 
+
 		TryInsertDistance(noveltyBuffer[i], newDes);
 	}
 
@@ -517,6 +518,7 @@ void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, vecto
 }
 
 //Insert the distance if it is closer than the current farthest distance.
+#pragma optimize( "", off)
 void NeuralNetwork::TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceDescription *distDesc)
 {
 	//Only check if a distance cache removal is needed if the distance cache is full.
@@ -533,7 +535,8 @@ void NeuralNetwork::TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceD
 
 	//Insert the distance into the sorted distance list of the occupant->
 	// initially used r-iterator, but I want make sure that I could insert AFTER an element
-	for (auto it = occupant->distanceDescriptions.end(); it != occupant->distanceDescriptions.begin(); it--)
+	/*
+	for (auto it = occupant->distanceDescriptions.begin(); it != occupant->distanceDescriptions.end(); it++)
 	{
 		//Check where the new distance should be placed.
 		if (distDesc->distance > (*it)->distance)
@@ -545,6 +548,11 @@ void NeuralNetwork::TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceD
 
 	//The new distance is the new nearest.
 	occupant->distanceDescriptions.insert(occupant->distanceDescriptions.begin(), distDesc);
+	*/
+
+	// just sort the list so that this function doesn't get optimized out again
+	occupant->distanceDescriptions.push_back(distDesc);
+	sort(occupant->distanceDescriptions.begin(), occupant->distanceDescriptions.end());
 }
 
 //Remove an experience from the novelty buffer.
