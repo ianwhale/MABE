@@ -234,7 +234,7 @@ public:
 	void UpdateOnlineError(double currentError);
 
 	//Add a new experience to the novelty buffer.
-	void AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, vector<DistanceDescription*> distDescriptions);
+	void AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, const vector<DistanceDescription*>& distDescriptions);
 
 	//Insert the distance if it is closer than the current farthest distance.
 	void TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceDescription *distDesc);

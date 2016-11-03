@@ -498,7 +498,7 @@ void NeuralNetwork::UpdateOnlineError(double currentError)
 }
 
 //Add a new experience to the novelty buffer.
-void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, vector<DistanceDescription*> distDescriptions)
+void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, const vector<DistanceDescription*>& distDescriptions)
 {
 	//Add the distance for the new occupant to each other and to itself if needed.
 	for (unsigned i = 0; i < noveltyBuffer.size(); i++)
@@ -517,6 +517,7 @@ void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, vecto
 }
 
 //Insert the distance if it is closer than the current farthest distance.
+#pragma optimize( "", off)
 void NeuralNetwork::TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceDescription *distDesc)
 {
 	//Only check if a distance cache removal is needed if the distance cache is full.
@@ -533,18 +534,23 @@ void NeuralNetwork::TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceD
 
 	//Insert the distance into the sorted distance list of the occupant->
 	// initially used r-iterator, but I want make sure that I could insert AFTER an element
-	for (auto it = occupant->distanceDescriptions.end(); it != occupant->distanceDescriptions.begin(); it--)
+	/*
+	for (auto it = occupant->distanceDescriptions.begin(); it != occupant->distanceDescriptions.end(); it++)
 	{
-		//Check where the new distance should be placed.
-		if (distDesc->distance > (*it)->distance)
-		{
-			occupant->distanceDescriptions.insert(it+1, distDesc);
-			return;
-		}
+	//Check where the new distance should be placed.
+	if (distDesc->distance > (*it)->distance)
+	{
+	occupant->distanceDescriptions.insert(it+1, distDesc);
+	return;
 	}
-
+	}
 	//The new distance is the new nearest.
 	occupant->distanceDescriptions.insert(occupant->distanceDescriptions.begin(), distDesc);
+	*/
+
+	// just sort the list so that this function doesn't get optimized out again
+	occupant->distanceDescriptions.push_back(distDesc);
+	sort(occupant->distanceDescriptions.begin(), occupant->distanceDescriptions.end());
 }
 
 //Remove an experience from the novelty buffer.
