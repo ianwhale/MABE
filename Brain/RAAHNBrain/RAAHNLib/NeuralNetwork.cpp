@@ -507,6 +507,7 @@ void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, const
 		newDes->distance = distDescriptions[i]->distance;
 		newDes->distanceOwner = newOccupant;
 
+
 		TryInsertDistance(noveltyBuffer[i], newDes);
 	}
 
