@@ -18,15 +18,18 @@ using namespace std;
 RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT) :
 	AbstractBrain(_nrInNodes, _nrOutNodes, _nrHiddenNodes, _PT) {
 	// Initialize groups.
-	int input_idx = ann.AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
+	ann = make_unique<NeuralNetwork>(DEFAULT_HISTORY_BUFFER_SIZE, DEFAULT_OUTPUT_NOISE_MAGNITUDE, DEFAULT_WEIGHT_NOISE_MAGNITUDE, DEFAULT_NOVELTY_USE);
+
+	int input_idx = ann->AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
 
 	int hiddenLayer = 5;
+
 	if (_nrInNodes <= 5) {
 		hiddenLayer = _nrInNodes - 1;
 	}
 
-	int hidden_idx = ann.AddNeuronGroup(hiddenLayer, NeuronGroup::Type::HIDDEN); 
-	output_idx = ann.AddNeuronGroup(_nrOutNodes, NeuronGroup::Type::OUTPUT);
+	int hidden_idx = ann->AddNeuronGroup(hiddenLayer, NeuronGroup::Type::HIDDEN); 
+	output_idx = ann->AddNeuronGroup(_nrOutNodes, NeuronGroup::Type::OUTPUT);
 
 	NeuronGroup::Identifier input;
 	input.index = input_idx;
@@ -46,12 +49,12 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	unsigned modSig = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann.ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
-	ann.ConnectGroups(&hidden, &output, hebbTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
 
 	// Add noise.
-	ann.SetOutputNoiseMagnitude(DEFAULT_OUTPUT_NOISE_MAGNITUDE);
-	ann.SetWeightNoiseMagnitude(DEFAULT_WEIGHT_NOISE_MAGNITUDE);
+	ann->SetOutputNoiseMagnitude(DEFAULT_OUTPUT_NOISE_MAGNITUDE);
+	ann->SetWeightNoiseMagnitude(DEFAULT_WEIGHT_NOISE_MAGNITUDE);
 }
 
 void printNodes(vector<double> &print_me)
@@ -71,9 +74,9 @@ void RAAHNBrain::update()
 		inputs.push_back(nodes[inputNodesList[i]]);
 	}
 
-	ann.AddExperience(inputs);
+	ann->AddExperience(inputs);
 
-	ann.PropagateSignal();
+	ann->PropagateSignal();
 
 	double out;
 	int neuron_iter = 0;
@@ -81,7 +84,7 @@ void RAAHNBrain::update()
 	// Set the results. 
 	for (int i = 0; i < nrOutNodes; i++)
 	{
-		out = ann.GetOutputValue(output_idx, neuron_iter);
+		out = ann->GetOutputValue(output_idx, neuron_iter);
 		nodes[outputNodesList[i]] = round(out); // Binary output for some worlds might not be the desired output... 
 		neuron_iter++;
 	}

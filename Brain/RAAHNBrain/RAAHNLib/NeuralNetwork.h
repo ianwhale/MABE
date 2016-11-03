@@ -253,7 +253,7 @@ public:
 	//Makes sure an identifier specifies a neuron group within allvectorGroups.
 	bool VerifyIdentifier(NeuronGroup::Identifier *ident);
 
-	double ExpDistance(vector<double> exp, vector<double> compare);
+	double ExpDistance(const vector<double>& exp, const vector<double>& compare);
 
 	//Expensive computation of novelty score for a new experiences.
 	vector<DistanceDescription*> ComputeNewDistances(NoveltyBufferOccupant *occupant);

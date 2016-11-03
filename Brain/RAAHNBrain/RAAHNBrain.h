@@ -20,6 +20,8 @@ public:
 	double const DEFAULT_WEIGHT_NOISE_MAGNITUDE = 0.1;
 	double const DEFAULT_MODULATION_INDEX = 0.1;
 	unsigned const DEFAULT_SAMPLE_COUNT = 10;
+	unsigned const DEFAULT_HISTORY_BUFFER_SIZE = 10;
+	const bool DEFAULT_NOVELTY_USE = true;
 	
 	
 	RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT = nullptr);
@@ -35,7 +37,7 @@ public:
 private:
 
 	int output_idx;
-	NeuralNetwork ann;
+	unique_ptr<NeuralNetwork> ann;
 };
 
 inline shared_ptr<AbstractBrain> RAAHNBrain_brainFactory(int ins, int outs, int hidden, shared_ptr<ParametersTable> PT) {

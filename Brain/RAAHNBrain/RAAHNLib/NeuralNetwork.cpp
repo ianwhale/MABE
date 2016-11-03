@@ -414,11 +414,11 @@ void NeuralNetwork::Construct(unsigned historySize, double outputNoiseMag, doubl
 	int historyBufferSizei = (int)historyBufferSize;
 
 	if (useNovelty)
-		noveltyBuffer = vector<NoveltyBufferOccupant*>(historyBufferSizei);
+		noveltyBuffer = vector<NoveltyBufferOccupant*>();
 	else
-		historyBuffer = deque<vector<double>>(historyBufferSizei);
+		historyBuffer = deque<vector<double>>();
 
-	errorBuffer = deque<double>(historyBufferSizei);
+	errorBuffer = deque<double>();
 
 	allListGroups = vector<vector<NeuronGroup*>*>();
 
@@ -653,7 +653,7 @@ bool NeuralNetwork::VerifyIdentifier(NeuronGroup::Identifier *ident)
 	return true;
 }
 
-double NeuralNetwork::ExpDistance(vector<double> exp, vector<double> compare)
+double NeuralNetwork::ExpDistance(const vector<double>& exp, const vector<double>& compare)
 {
 	double sum = 0.0;
 
@@ -673,7 +673,7 @@ vector<NeuralNetwork::DistanceDescription*> NeuralNetwork::ComputeNewDistances(N
 
 	if (noveltyBuffer.size() < historyBufferSize)
 	{
-		distanceDescriptions = vector<DistanceDescription*>(noveltyBuffer.size());
+		distanceDescriptions = vector<DistanceDescription*>();
 
 		for(NoveltyBufferOccupant *currentOccupant : noveltyBuffer)
 		{
@@ -689,7 +689,7 @@ vector<NeuralNetwork::DistanceDescription*> NeuralNetwork::ComputeNewDistances(N
 	else
 	{
 		//Only need one less than the number of novelty buffer occupants.
-		distanceDescriptions = vector<DistanceDescription*>(noveltyBuffer.size() - 1);
+		distanceDescriptions = vector<DistanceDescription*>();
 
 		//Don't include the least novel occupant in the distance cache.
 		for (unsigned i = 1; i < noveltyBuffer.size(); i++)
@@ -708,7 +708,7 @@ vector<NeuralNetwork::DistanceDescription*> NeuralNetwork::ComputeNewDistances(N
 
 	//Copy the distances for sorting. The original list order is maintained 
 	//so its distances can easily be added to the other novelty buffer occupants.
-	vector<DistanceDescription*> sortedList = vector<DistanceDescription*>(distanceDescriptions.size());
+	vector<DistanceDescription*> sortedList = vector<DistanceDescription*>();
 
 	for (unsigned i = 0; i < distanceDescriptions.size(); i++)
 		sortedList.push_back(distanceDescriptions[i]);
