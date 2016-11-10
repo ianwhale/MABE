@@ -148,6 +148,7 @@ public:
 	bool senseFront;
 	bool senseFrontSides;
 	bool senseWalls;
+	bool senseCone;
 
 	bool senseOther;
 	bool clearOutputs;

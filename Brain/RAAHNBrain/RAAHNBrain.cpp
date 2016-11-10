@@ -78,6 +78,10 @@ void RAAHNBrain::update()
 
 	ann->PropagateSignal();
 
+	//
+	// Need to add modulation signal and then call ann.Train()
+	//
+
 	double out;
 	int neuron_iter = 0;
 
