@@ -912,11 +912,11 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					case 0:  //nothing
 						break;
 					case 1:  //turn left
-						facing[orgIndex] = turnLeft90(facing[orgIndex]);
+						facing[orgIndex] = turnLeft90(facing[orgIndex]); // Only allow 90 degree turns.
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 2:  //turn right
-						facing[orgIndex] = turnRight90(facing[orgIndex]);
+						facing[orgIndex] = turnRight90(facing[orgIndex]); // Only allow 90 degree turns. 
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 3:  //move forward

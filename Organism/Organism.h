@@ -40,8 +40,7 @@ class Organism {
 	shared_ptr<ParametersTable> PT; 
 
 	double score;
-	deque<double> scoreHistory;
-	void initHistory() { scoreHistory.push_back(0); scoreHistory.push_back(0); scoreHistory.push_back(0); }
+	deque<double> scoreHistory = { 0, 0, 0 };
 	double averageHistory() { return (scoreHistory[0] + scoreHistory[1] + scoreHistory[2]) / 3; }
 
 	int offspringCount;

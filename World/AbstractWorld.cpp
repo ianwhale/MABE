@@ -51,10 +51,6 @@ void AbstractWorld::evaluate(shared_ptr<Group> group, bool groupEvaluation, bool
 		}
 	}
 	for (size_t i = 0; i < group->population.size(); i++) {
-		double individual_score = scores[i] / repeatsPL->lookup();
-		
-		group->population[i]->score = individual_score;
-		group->population[i]->scoreHistory.pop_front();
-		group->population[i]->scoreHistory.push_back(individual_score);
+		group->population[i]->score = scores[i] / repeatsPL->lookup();
 	}
 }
