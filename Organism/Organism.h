@@ -13,7 +13,9 @@
 
 #include <stdlib.h>
 #include <vector>
+#include <deque>
 #include <unordered_set>
+#include <algorithm>
 
 #include "../Brain/AbstractBrain.h"
 #include "../Genome/AbstractGenome.h"
@@ -38,6 +40,9 @@ class Organism {
 	shared_ptr<ParametersTable> PT; 
 
 	double score;
+	deque<double> scoreHistory;
+	void initHistory() { scoreHistory.push_back(0); scoreHistory.push_back(0); scoreHistory.push_back(0); }
+	double averageHistory() { return (scoreHistory[0] + scoreHistory[1] + scoreHistory[2]) / 3; }
 
 	int offspringCount;
 

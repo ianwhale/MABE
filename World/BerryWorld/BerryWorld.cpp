@@ -616,7 +616,12 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 			}
 			currentLocation.push_back(newLocation);  // location of the organism
 			if (fixedStartFacing == -1) {
-				facing.push_back(Random::getIndex(8));  // direction the agent is facing
+				// Need to start on a 90 degree multiple. (Even number)
+				int rando = Random::getIndex(8);
+
+				rando = (rando % 2 == 0) ? rando : rando - 1;
+
+				facing.push_back(rando);  // direction the agent is facing
 			} else {
 				facing.push_back(fixedStartFacing);
 			}
@@ -681,15 +686,16 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				orgList.pop_back();
 
 				pair<int, int> front_cord = moveOnGrid(currentLocation[orgIndex], facing[orgIndex]);
-				pair<int, int> left_cord = moveOnGrid(currentLocation[orgIndex], turnLeft(facing[orgIndex]));
-				pair<int, int> right_cord = moveOnGrid(currentLocation[orgIndex], turnRight(facing[orgIndex]));
+				pair<int, int> left_cord = moveOnGrid(currentLocation[orgIndex], turnLeft90(facing[orgIndex]));
+				pair<int, int> right_cord = moveOnGrid(currentLocation[orgIndex], turnRight90(facing[orgIndex]));
 				pair<int, int> c_1_cord = moveOnGrid(front_cord, facing[orgIndex]);
-				pair<int, int> c_4_cord = moveOnGrid(c_1_cord, turnLeft(facing[orgIndex]));
-				pair<int, int> c_6_cord = moveOnGrid(c_4_cord, turnLeft(facing[orgIndex]));
-				pair<int, int> c_5_cord = moveOnGrid(c_1_cord, turnRight(facing[orgIndex]));
-				pair<int, int> c_7_cord = moveOnGrid(c_5_cord, turnRight(facing[orgIndex]));
+				pair<int, int> c_4_cord = moveOnGrid(c_1_cord, turnLeft90(facing[orgIndex]));
+				pair<int, int> c_6_cord = moveOnGrid(c_4_cord, turnLeft90(facing[orgIndex]));
+				pair<int, int> c_5_cord = moveOnGrid(c_1_cord, turnRight90(facing[orgIndex]));
+				pair<int, int> c_7_cord = moveOnGrid(c_5_cord, turnRight90(facing[orgIndex]));
 
-				here = getGridValue(grid, currentLocation[orgIndex]);
+				// here = getGridValue(grid, currentLocation[orgIndex]);
+				
 				front = getGridValue(grid, front_cord);
 				leftFront = getGridValue(grid, left_cord);
 				rightFront = getGridValue(grid, right_cord);
@@ -707,6 +713,14 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				group->population[orgIndex]->brain->setInput(5, c_5);
 				group->population[orgIndex]->brain->setInput(6, c_6);
 				group->population[orgIndex]->brain->setInput(7, c_7);
+
+				// Set average as 9th input. 
+				double sum = foodRewards[front] + foodRewards[leftFront] + foodRewards[rightFront] + foodRewards[c_1]
+					+ foodRewards[c_4] + foodRewards[c_6] + foodRewards[c_5] + foodRewards[c_7];
+				group->population[orgIndex]->brain->setInput(8, sum / 8);
+
+				// Set average of last 3 scores 
+				group->population[orgIndex]->brain->setInput(9, group->population[orgIndex]->averageHistory());
 
 				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
 				//if (senseWalls) {
@@ -804,8 +818,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 				//}
 
-				// Set average of values. 
-
+				// Set average of values.
 
 				if (debug) {
 					cout << "\n----------------------------\n";
@@ -899,11 +912,11 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					case 0:  //nothing
 						break;
 					case 1:  //turn left
-						facing[orgIndex] = turnLeft(facing[orgIndex]);
+						facing[orgIndex] = turnLeft90(facing[orgIndex]);
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 2:  //turn right
-						facing[orgIndex] = turnRight(facing[orgIndex]);
+						facing[orgIndex] = turnRight90(facing[orgIndex]);
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 3:  //move forward
