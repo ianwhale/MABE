@@ -699,101 +699,110 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				c_5 = getGridValue(grid, c_5_cord);
 				c_7 = getGridValue(grid, c_7_cord);
 
-				nodesAssignmentCounter = 0;  // get ready to start assigning inputs
-				if (senseWalls) {
-					if (senseDown) {
-						for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at here location
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (here == i + 1));
-						}
-					}
-					if (senseFront) {
-						for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (front == i + 1));
-						}
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (front == WALL));
-					}
-					if (senseFrontSides) {
-						for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (leftFront == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (rightFront == i + 1));
-						}
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (leftFront == WALL));
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (rightFront == WALL));
-					}
-					if (senseCone) {
-						for (int i = 0; i < foodTypes; i++) {
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_1 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_4 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_6 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_5 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_7 == i + 1));
-						}
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_1 == WALL));
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_4 == WALL));
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_6 == WALL));
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_5 == WALL));
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_7 == WALL));
-					}
-				} else {  // don't sense walls
-					if (senseDown) {
-						for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at here location
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (here == i + 1));
-						}
-					}
-					if (senseFront) {
-						for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (front == i + 1));
-						}
-					}
-					if (senseFrontSides) {
-						for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (leftFront == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (rightFront == i + 1));
-						}
-					}
-					if (senseCone) {
-						for (int i = 0; i < foodTypes; i++) {
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_1 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_4 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_6 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_5 == i + 1));
-							group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_7 == i + 1));
-						}
-					}
-				}
+				group->population[orgIndex]->brain->setInput(0, front);
+				group->population[orgIndex]->brain->setInput(1, c_1);
+				group->population[orgIndex]->brain->setInput(2, leftFront);
+				group->population[orgIndex]->brain->setInput(3, rightFront);
+				group->population[orgIndex]->brain->setInput(4, c_4);
+				group->population[orgIndex]->brain->setInput(5, c_5);
+				group->population[orgIndex]->brain->setInput(6, c_6);
+				group->population[orgIndex]->brain->setInput(7, c_7);
 
-				if (senseOther) {
-					otherFront = getGridValue(orgPositionsGrid, moveOnGrid(currentLocation[orgIndex], facing[orgIndex]));
-					otherLeftFront = getGridValue(orgPositionsGrid, moveOnGrid(currentLocation[orgIndex], turnLeft(facing[orgIndex])));
-					otherRightFront = getGridValue(orgPositionsGrid, moveOnGrid(currentLocation[orgIndex], turnRight(facing[orgIndex])));
+				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
+				//if (senseWalls) {
+				//	if (senseDown) {
+				//		for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at here location
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (here == i + 1));
+				//		}
+				//	}
+				//	if (senseFront) {
+				//		for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (front == i + 1));
+				//		}
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (front == WALL));
+				//	}
+				//	if (senseFrontSides) {
+				//		for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (leftFront == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (rightFront == i + 1));
+				//		}
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (leftFront == WALL));
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (rightFront == WALL));
+				//	}
+				//	if (senseCone) {
+				//		for (int i = 0; i < foodTypes; i++) {
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_1 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_4 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_6 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_5 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_7 == i + 1));
+				//		}
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_1 == WALL));
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_4 == WALL));
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_6 == WALL));
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_5 == WALL));
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_7 == WALL));
+				//	}
+				//} else {  // don't sense walls
+				//	if (senseDown) {
+				//		for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at here location
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (here == i + 1));
+				//		}
+				//	}
+				//	if (senseFront) {
+				//		for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (front == i + 1));
+				//		}
+				//	}
+				//	if (senseFrontSides) {
+				//		for (int i = 0; i < foodTypes; i++) {  // fill first nodes with food values at front location
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (leftFront == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (rightFront == i + 1));
+				//		}
+				//	}
+				//	if (senseCone) {
+				//		for (int i = 0; i < foodTypes; i++) {
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_1 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_4 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_6 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_5 == i + 1));
+				//			group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, (c_7 == i + 1));
+				//		}
+				//	}
+				//}
 
-					if (senseFront) {
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, otherFront);
-					}
-					if (senseFrontSides) {
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, otherLeftFront);
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, otherRightFront);
+				//if (senseOther) {
+				//	otherFront = getGridValue(orgPositionsGrid, moveOnGrid(currentLocation[orgIndex], facing[orgIndex]));
+				//	otherLeftFront = getGridValue(orgPositionsGrid, moveOnGrid(currentLocation[orgIndex], turnLeft(facing[orgIndex])));
+				//	otherRightFront = getGridValue(orgPositionsGrid, moveOnGrid(currentLocation[orgIndex], turnRight(facing[orgIndex])));
 
-					}
-				}
-				if (senseVisited) {
-					visitedHere = getGridValue(visitedGrid, currentLocation[orgIndex]);
-					visitedFront = getGridValue(visitedGrid, moveOnGrid(currentLocation[orgIndex], facing[orgIndex]));
-					visitedLeftFront = getGridValue(visitedGrid, moveOnGrid(currentLocation[orgIndex], turnLeft(facing[orgIndex])));
-					visitedRightFront = getGridValue(visitedGrid, moveOnGrid(currentLocation[orgIndex], turnRight(facing[orgIndex])));
-					if (senseDown) {
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedHere);
-					}
-					if (senseFront) {
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedFront);
-					}
-					if (senseFrontSides) {
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedLeftFront);
-						group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedRightFront);
+				//	if (senseFront) {
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, otherFront);
+				//	}
+				//	if (senseFrontSides) {
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, otherLeftFront);
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, otherRightFront);
 
-					}
+				//	}
+				//}
+				//if (senseVisited) {
+				//	visitedHere = getGridValue(visitedGrid, currentLocation[orgIndex]);
+				//	visitedFront = getGridValue(visitedGrid, moveOnGrid(currentLocation[orgIndex], facing[orgIndex]));
+				//	visitedLeftFront = getGridValue(visitedGrid, moveOnGrid(currentLocation[orgIndex], turnLeft(facing[orgIndex])));
+				//	visitedRightFront = getGridValue(visitedGrid, moveOnGrid(currentLocation[orgIndex], turnRight(facing[orgIndex])));
+				//	if (senseDown) {
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedHere);
+				//	}
+				//	if (senseFront) {
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedFront);
+				//	}
+				//	if (senseFrontSides) {
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedLeftFront);
+				//		group->population[orgIndex]->brain->setInput(nodesAssignmentCounter++, visitedRightFront);
 
-				}
+				//	}
+
+				//}
 
 				// Set average of values. 
 
