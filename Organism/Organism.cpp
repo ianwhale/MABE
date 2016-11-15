@@ -277,6 +277,5 @@ shared_ptr<Organism> Organism::makeCopy(shared_ptr<ParametersTable> _PT) {
 	newOrg->timeOfDeath = timeOfDeath;
 	newOrg->alive = alive;
 	newOrg->ID = registerOrganism();
-	newOrg->scoreHistory = scoreHistory;
 	return newOrg; 
 }

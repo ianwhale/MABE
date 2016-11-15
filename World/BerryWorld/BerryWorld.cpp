@@ -9,6 +9,7 @@
 //         github.com/ahnt/MABE/wiki/License
 
 #include "BerryWorld.h"
+#include "../../Group/Group.h"
 
 shared_ptr<ParameterLink<double>> BerryWorld::TSKPL = Parameters::register_parameter("WORLD_BERRY-taskSwitchingCost", 1.4, "cost to change food sources");
 shared_ptr<ParameterLink<int>> BerryWorld::worldUpdatesPL = Parameters::register_parameter("WORLD_BERRY-worldUpdates", 400, "amount of time a brain is tested");
@@ -383,6 +384,9 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 	vector<double> summedScores(group->population.size(), 0);
 
+	vector<double> history(3, 0);
+	int current = 0; 
+
 	DataMap dataMap;
 
 	vector<pair<string, string>> worldList; // make a list of worlds to test this (possibly population) organism in. If empty, a random world is generated.
@@ -720,7 +724,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				group->population[orgIndex]->brain->setInput(8, sum / 8);
 
 				// Set average of last 3 scores 
-				group->population[orgIndex]->brain->setInput(9, group->population[orgIndex]->averageHistory());
+				double score_delta = 0; // TODO: something...
+				group->population[orgIndex]->brain->setInput(9, score_delta);
 
 				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
 				//if (senseWalls) {
@@ -977,6 +982,9 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					cout << "last eaten: " << lastFood[orgIndex] << " here: " << getGridValue(grid, currentLocation[orgIndex]) << "\nloc: " << currentLocation[orgIndex].first << "," << currentLocation[orgIndex].second << "  facing: " << facing[orgIndex] << "\n";
 					cout << "score: " << scores[orgIndex] << " switches: " << switches[orgIndex] << "\n";
 				}
+
+				history[current] = scores[orgIndex]; // Set history buffer. 
+
 			}  // end world evaluation loop
 			if (visualize) {
 				BerryWorld::SaveWorldState(visualizationFileName, grid, visitedGrid, currentLocation, facing);
@@ -1135,6 +1143,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 	if (saveOrgActions) { // if saveOrgActions save the output.
 		dataMap.writeToFile(visualizationFileName+"_actions.txt");
 	}
+
+	current = (current + 1) % history.size();
 }
 
 void BerryWorld::SaveWorldState(string fileName, vector<int> grid, vector<int> vistedGrid, vector<pair<int, int>> currentLocation, vector<int> facing, bool reset) {

@@ -13,6 +13,8 @@
 #include <cmath>
 #include <iostream>
 
+const double MIN_REWARD = -0.5;
+
 using namespace std;
 
 RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT) :
@@ -20,7 +22,7 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	// Initialize groups.
 	ann = make_unique<NeuralNetwork>(DEFAULT_HISTORY_BUFFER_SIZE, DEFAULT_OUTPUT_NOISE_MAGNITUDE, DEFAULT_WEIGHT_NOISE_MAGNITUDE, DEFAULT_NOVELTY_USE);
 
-	int input_idx = ann->AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
+	int input_idx = ann->AddNeuronGroup(_nrInNodes - 2, NeuronGroup::Type::INPUT);
 
 	int hiddenLayer = 5;
 
@@ -69,7 +71,8 @@ void RAAHNBrain::update()
 {
 	vector<double> inputs;
 
-	for (int i = 0; i < nrInNodes - 1; i++) // Get inputs.
+	int i;
+	for (i = 0; i < nrInNodes - 3; i++) // Get inputs.
 	{ 
 		inputs.push_back(nodes[inputNodesList[i]]);
 	}
@@ -77,6 +80,12 @@ void RAAHNBrain::update()
 	ann->AddExperience(inputs);
 
 	ann->PropagateSignal();
+
+	double avgOfSensed = nodes[inputNodesList[i]]; 
+	i++;
+	double scoreHistory = nodes[inputNodesList[i]];
+
+	// TODO: Need to normalize the average of past 3 scores somehow, average of sensors is already normal. 
 
 	//
 	// Need to add modulation signal and then call ann.Train()

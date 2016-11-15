@@ -22,7 +22,6 @@ shared_ptr<ParameterLink<string>> AbstractWorld::worldTypePL = Parameters::regis
 
 void AbstractWorld::evaluate(shared_ptr<Group> group, bool groupEvaluation, bool analyse, bool visualize, bool debug) {
 	vector<double> scores(group->population.size(), 0);
-
 	//for (size_t i = 0; i < group->population.size(); i++) {
 	//	group->population[i]->dataMap.Clear("allscore");
 	//}
@@ -46,7 +45,6 @@ void AbstractWorld::evaluate(shared_ptr<Group> group, bool groupEvaluation, bool
 				runWorld(soloGroup, analyse, visualize, debug);
 				scores[i] += group->population[i]->score;
 				//scores[i] += testIndividual(group->population[i],0,0);
-				//group->population[i]->dataMap.Append("allscore",group->population[i]->score);
 			}
 		}
 	}
