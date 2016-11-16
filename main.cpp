@@ -154,7 +154,7 @@ int main(int argc, const char * argv[]) {
 		while (!groups[defaultGroup]->archivist->finished) {
 
 			// evaluate population in world.
-			world->evaluate(groups[defaultGroup], AbstractWorld::groupEvaluationPL->lookup(), false, false, true);  // evaluate each organism in the population using a World
+			world->evaluate(groups[defaultGroup], AbstractWorld::groupEvaluationPL->lookup(), false, false, false);  // evaluate each organism in the population using a World
 			//cout << "  evaluation done" << endl;
 
 			// save data, update memory and delete any unneeded data;

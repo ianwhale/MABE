@@ -103,7 +103,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	unsigned modSig = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true, hiddenWeights);
 	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
 
 	// Add noise.
@@ -168,5 +168,8 @@ shared_ptr<AbstractBrain> RAAHNBrain::makeBrainFromGenome(shared_ptr<AbstractGen
 
 void RAAHNBrain::initalizeGenome(shared_ptr<AbstractGenome> _genome)
 {
-	// TODO: Temp
+	auto genomeHandler = _genome->newHandler(_genome);
+	for (int i = 0; i < 10; i++) {
+		genomeHandler->writeInt((int)ann->NextDouble(), 0, _MAX_INT_DIG);
+	}
 }

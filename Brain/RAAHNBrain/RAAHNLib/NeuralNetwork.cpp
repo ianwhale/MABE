@@ -196,7 +196,7 @@ bool NeuralNetwork::SetOutput(unsigned groupIndex, unsigned index, double value)
 //Sample count refers to how many training samples should be used each time Train() is called.
 bool NeuralNetwork::ConnectGroups(NeuronGroup::Identifier *input, NeuronGroup::Identifier *output,
 	ConnectionGroup::TrainFunctionType trainMethod, int modulationIndex,
-	unsigned sampleCount, double learningRate, bool useBias)
+	unsigned sampleCount, double learningRate, bool useBias, vector<double> &presetWeights)
 {
 	if (!VerifyIdentifier(input) || !VerifyIdentifier(output))
 		return false;
@@ -222,8 +222,14 @@ bool NeuralNetwork::ConnectGroups(NeuronGroup::Identifier *input, NeuronGroup::I
 		{
 			double range = sqrt(WEIGHT_RANGE_SCALE / neuronInOutCount);
 			//Keep in the range of [-range, range]
-			double weight = (NextDouble() * range * DOUBLE_WEIGHT_RANGE) - range;
 
+			double weight;
+			if (presetWeights.size() > y) {
+				weight = (presetWeights[y] * range * DOUBLE_WEIGHT_RANGE) - range;
+			}
+			else {
+				weight = (NextDouble() * range * DOUBLE_WEIGHT_RANGE) - range;
+			}
 			cGroup->AddConnection(x, y, weight);
 		}
 	}
