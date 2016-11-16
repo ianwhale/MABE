@@ -48,11 +48,11 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	ConnectionGroup::TrainFunctionType hebbTrain = TrainingMethod::HebbianTrain;
 	ConnectionGroup::TrainFunctionType autoTrain = TrainingMethod::AutoencoderTrain;
 
-	unsigned modSig = ModulationSignal::AddSignal();
+	unsigned modIndex = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
-	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modIndex, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
 
 	// Add noise.
 	ann->SetOutputNoiseMagnitude(DEFAULT_OUTPUT_NOISE_MAGNITUDE);
@@ -81,15 +81,13 @@ void RAAHNBrain::update()
 
 	ann->PropagateSignal();
 
-	double avgOfSensed = nodes[inputNodesList[i]]; 
-	i++;
-	double scoreHistory = nodes[inputNodesList[i]];
-
-	// TODO: Need to normalize the average of past 3 scores somehow, average of sensors is already normal. 
-
 	//
 	// Need to add modulation signal and then call ann.Train()
 	//
+	double signal = (nodes[inputNodesList[i]] + nodes[inputNodesList[++i]]) / 2; // Average the modulation signals. 
+	ModulationSignal::SetSignal(modIndex, signal);
+
+	ann->Train();
 
 	double out;
 	int neuron_iter = 0;
