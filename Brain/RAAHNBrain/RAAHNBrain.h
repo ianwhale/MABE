@@ -20,7 +20,7 @@ public:
 	double const DEFAULT_WEIGHT_NOISE_MAGNITUDE = 0.1;
 	double const DEFAULT_MODULATION_INDEX = 0.1;
 	unsigned const DEFAULT_SAMPLE_COUNT = 10;
-	unsigned const DEFAULT_HISTORY_BUFFER_SIZE = 10;
+	unsigned const DEFAULT_HISTORY_BUFFER_SIZE = 25;
 	const bool DEFAULT_NOVELTY_USE = true;
 	
 	
