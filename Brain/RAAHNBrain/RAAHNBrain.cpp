@@ -13,8 +13,6 @@
 #include <cmath>
 #include <iostream>
 
-const double MIN_REWARD = -0.5;
-
 using namespace std;
 
 RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT) :
@@ -90,14 +88,11 @@ void RAAHNBrain::update()
 	ann->Train();
 
 	double out;
-	int neuron_iter = 0;
-
 	// Set the results. 
 	for (int i = 0; i < nrOutNodes; i++)
 	{
-		out = ann->GetOutputValue(output_idx, neuron_iter);
+		out = ann->GetOutputValue(output_idx, i);
 		nodes[outputNodesList[i]] = round(out); // Binary output for some worlds might not be the desired output... 
-		neuron_iter++;
 	}
 }
 

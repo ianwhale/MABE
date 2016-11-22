@@ -690,8 +690,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				orgList.pop_back();
 
 				pair<int, int> front_cord = moveOnGrid(currentLocation[orgIndex], facing[orgIndex]);
-				pair<int, int> left_cord = moveOnGrid(currentLocation[orgIndex], turnLeft90(facing[orgIndex]));
-				pair<int, int> right_cord = moveOnGrid(currentLocation[orgIndex], turnRight90(facing[orgIndex]));
+				pair<int, int> left_cord = moveOnGrid(front_cord, turnLeft90(facing[orgIndex]));
+				pair<int, int> right_cord = moveOnGrid(front_cord, turnRight90(facing[orgIndex]));
 				pair<int, int> c_1_cord = moveOnGrid(front_cord, facing[orgIndex]);
 				pair<int, int> c_4_cord = moveOnGrid(c_1_cord, turnLeft90(facing[orgIndex]));
 				pair<int, int> c_6_cord = moveOnGrid(c_4_cord, turnLeft90(facing[orgIndex]));
@@ -709,24 +709,24 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				c_5 = getGridValue(grid, c_5_cord);
 				c_7 = getGridValue(grid, c_7_cord);
 
-				group->population[orgIndex]->brain->setInput(0, front);
-				group->population[orgIndex]->brain->setInput(1, c_1);
-				group->population[orgIndex]->brain->setInput(2, leftFront);
-				group->population[orgIndex]->brain->setInput(3, rightFront);
-				group->population[orgIndex]->brain->setInput(4, c_4);
-				group->population[orgIndex]->brain->setInput(5, c_5);
-				group->population[orgIndex]->brain->setInput(6, c_6);
-				group->population[orgIndex]->brain->setInput(7, c_7);
+				group->population[orgIndex]->brain->setInput(2, front);
+				group->population[orgIndex]->brain->setInput(3, c_1);
+				group->population[orgIndex]->brain->setInput(4, leftFront);
+				group->population[orgIndex]->brain->setInput(5, rightFront);
+				group->population[orgIndex]->brain->setInput(6, c_4);
+				group->population[orgIndex]->brain->setInput(7, c_5);
+				group->population[orgIndex]->brain->setInput(8, c_6);
+				group->population[orgIndex]->brain->setInput(9, c_7);
 
 				// Set average as 9th input. 
-				double sum = foodRewards[front] + foodRewards[leftFront] + foodRewards[rightFront] + foodRewards[c_1]
-					+ foodRewards[c_4] + foodRewards[c_6] + foodRewards[c_5] + foodRewards[c_7];
-				group->population[orgIndex]->brain->setInput(8, sum / 8);
+				double sum = foodRewards[front - 1] + foodRewards[leftFront - 1] + foodRewards[rightFront - 1] + foodRewards[c_1 - 1]
+					+ foodRewards[c_4 - 1] + foodRewards[c_6 - 1] + foodRewards[c_5 - 1] + foodRewards[c_7 - 1];
+				group->population[orgIndex]->brain->setInput(0, sum / 8);
 
 				// Weighted average of last score, 3 scores ago, and 5 scores ago. 
 				double ave = (history[current] + history[(current - 3) % 5] + history[(current - 5) % 5]) / 9;
 
-				group->population[orgIndex]->brain->setInput(9, ave);
+				group->population[orgIndex]->brain->setInput(1, ave);
 
 				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
 				//if (senseWalls) {
@@ -834,6 +834,10 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					for (int i = 0; i < inputNodesCount; i++) {
 						cout << group->population[orgIndex]->brain->readInput(i) << " ";
 					}
+
+					//cout << "\nFood values: " << foodRewards[front - 1] << " " << foodRewards[c_1 - 1] << " " << foodRewards[leftFront - 1] << " " << foodRewards[rightFront - 1]
+					//	<< " " << foodRewards[c_4 - 1] << " " << foodRewards[c_5 - 1] << " " << foodRewards[c_6 - 1] << " " << foodRewards[c_7 - 1] << endl;
+
 					cout << "\nlast outNodes: ";
 					for (int i = 0; i < outputNodesCount; i++) {
 						cout << group->population[orgIndex]->brain->readOutput(i) << " ";
@@ -887,7 +891,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				}
 
 				if (output2 == 1) {  // if org tried to eat
-					int foodHere = getGridValue(grid, currentLocation[orgIndex]);
+					int foodHere = getGridValue(grid, currentLocation[orgIndex]) - 1;
 					if ((recordFoodList && foodHere != 0) || (recordFoodList && recordFoodListEatEmpty)) {
 						group->population[orgIndex]->dataMap.Append("foodList", foodHere);  // record that org ate food (or tried to at any rate)
 					}
