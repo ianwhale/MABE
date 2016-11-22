@@ -315,10 +315,26 @@ public:
 	}
 
 	inline int turnLeft90(int facing) {
-		return (facing - 2) % 8;
+		if (facing == 1) {
+			return 7;
+		}
+		else if (facing == 0) {
+			return 6;
+		}
+		else {
+			return facing - 2;
+		}
 	}
 	inline int turnRight90(int facing) {
-		return (facing + 2) % 8;
+		if (facing == 6) {
+			return 0;
+		}
+		else if (facing == 7) {
+			return 1;
+		}
+		else {
+			return facing + 2;
+		}
 	}
 
 	void printGrid(vector<int> grid, pair<int, int> loc, int facing);
