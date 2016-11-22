@@ -9,6 +9,7 @@
 //         github.com/ahnt/MABE/wiki/License
 
 #include "BerryWorld.h"
+#include "../../Group/Group.h"
 
 shared_ptr<ParameterLink<double>> BerryWorld::TSKPL = Parameters::register_parameter("WORLD_BERRY-taskSwitchingCost", 1.4, "cost to change food sources");
 shared_ptr<ParameterLink<int>> BerryWorld::worldUpdatesPL = Parameters::register_parameter("WORLD_BERRY-worldUpdates", 400, "amount of time a brain is tested");
@@ -383,6 +384,9 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 	vector<double> summedScores(group->population.size(), 0);
 
+	vector<double> history(5, 0);
+	int current = 0; 
+
 	DataMap dataMap;
 
 	vector<pair<string, string>> worldList; // make a list of worlds to test this (possibly population) organism in. If empty, a random world is generated.
@@ -719,8 +723,10 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					+ foodRewards[c_4] + foodRewards[c_6] + foodRewards[c_5] + foodRewards[c_7];
 				group->population[orgIndex]->brain->setInput(8, sum / 8);
 
-				// Set average of last 3 scores 
-				group->population[orgIndex]->brain->setInput(9, group->population[orgIndex]->averageHistory());
+				// Weighted average of last score, 3 scores ago, and 5 scores ago. 
+				double ave = (history[current] + history[(current - 3) % 5] + history[(current - 5) % 5]) / 9;
+
+				group->population[orgIndex]->brain->setInput(9, ave);
 
 				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
 				//if (senseWalls) {
@@ -901,6 +907,9 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 						scores[orgIndex] += foodRewards[foodHere]; // you ate a food... good for you! (or bad)
 						//cout << "  ate food: " << foodHere << " reward: " << foodRewards[foodHere] << " total score: " << scores[orgIndex] << endl;
 					}
+
+					history[current] = lastFood[orgIndex]; // Set history buffer.
+
 				} else {
 					if (recordFoodList && recordFoodListNoEat) {
 						group->population[orgIndex]->dataMap.Append("foodList", -1);  // record that org did not try to eat this time
@@ -912,11 +921,11 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					case 0:  //nothing
 						break;
 					case 1:  //turn left
-						facing[orgIndex] = turnLeft90(facing[orgIndex]);
+						facing[orgIndex] = turnLeft90(facing[orgIndex]); // Only allow 90 degree turns.
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 2:  //turn right
-						facing[orgIndex] = turnRight90(facing[orgIndex]);
+						facing[orgIndex] = turnRight90(facing[orgIndex]); // Only allow 90 degree turns. 
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 3:  //move forward
@@ -976,7 +985,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					printGrid(grid, currentLocation[orgIndex], facing[orgIndex]);
 					cout << "last eaten: " << lastFood[orgIndex] << " here: " << getGridValue(grid, currentLocation[orgIndex]) << "\nloc: " << currentLocation[orgIndex].first << "," << currentLocation[orgIndex].second << "  facing: " << facing[orgIndex] << "\n";
 					cout << "score: " << scores[orgIndex] << " switches: " << switches[orgIndex] << "\n";
-				}
+				} 
 			}  // end world evaluation loop
 			if (visualize) {
 				BerryWorld::SaveWorldState(visualizationFileName, grid, visitedGrid, currentLocation, facing);
@@ -1135,6 +1144,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 	if (saveOrgActions) { // if saveOrgActions save the output.
 		dataMap.writeToFile(visualizationFileName+"_actions.txt");
 	}
+
+	current = (current + 1) % history.size();
 }
 
 void BerryWorld::SaveWorldState(string fileName, vector<int> grid, vector<int> vistedGrid, vector<pair<int, int>> currentLocation, vector<int> facing, bool reset) {

@@ -13,6 +13,8 @@
 #include <cmath>
 #include <iostream>
 
+const double MIN_REWARD = -0.5;
+
 using namespace std;
 
 RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT) :
@@ -20,7 +22,7 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	// Initialize groups.
 	ann = make_unique<NeuralNetwork>(DEFAULT_HISTORY_BUFFER_SIZE, DEFAULT_OUTPUT_NOISE_MAGNITUDE, DEFAULT_WEIGHT_NOISE_MAGNITUDE, DEFAULT_NOVELTY_USE);
 
-	int input_idx = ann->AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
+	int input_idx = ann->AddNeuronGroup(_nrInNodes - 2, NeuronGroup::Type::INPUT);
 
 	int hiddenLayer = 5;
 
@@ -46,11 +48,11 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	ConnectionGroup::TrainFunctionType hebbTrain = TrainingMethod::HebbianTrain;
 	ConnectionGroup::TrainFunctionType autoTrain = TrainingMethod::AutoencoderTrain;
 
-	unsigned modSig = ModulationSignal::AddSignal();
+	unsigned modIndex = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
-	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
+	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modIndex, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
 
 	// Add noise.
 	ann->SetOutputNoiseMagnitude(DEFAULT_OUTPUT_NOISE_MAGNITUDE);
@@ -123,8 +125,14 @@ void RAAHNBrain::update()
 {
 	vector<double> inputs;
 
+<<<<<<< HEAD
 	for (int i = 0; i < nrInNodes - 1; i++) // Get inputs.
 	{
+=======
+	int i;
+	for (i = 0; i < nrInNodes - 3; i++) // Get inputs.
+	{ 
+>>>>>>> 6d1ea23d9153bcafd168ecce5bd83e4dc5450fe1
 		inputs.push_back(nodes[inputNodesList[i]]);
 	}
 
@@ -135,6 +143,10 @@ void RAAHNBrain::update()
 	//
 	// Need to add modulation signal and then call ann.Train()
 	//
+	double signal = (nodes[inputNodesList[i]] + nodes[inputNodesList[++i]]) / 2; // Average the modulation signals. 
+	ModulationSignal::SetSignal(modIndex, signal);
+
+	ann->Train();
 
 	double out;
 	int neuron_iter = 0;

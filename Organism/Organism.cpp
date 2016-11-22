@@ -44,8 +44,6 @@ Organism::Organism(shared_ptr<ParametersTable> _PT) {
 	dataMap.Set("ID", ID);
 	dataMap.Set("alive", alive);
 	dataMap.Set("timeOfBirth", timeOfBirth);
-
-	initHistory();
 }
 
 /*
@@ -67,8 +65,6 @@ Organism::Organism(shared_ptr<AbstractGenome> _genome, shared_ptr<ParametersTabl
 	dataMap.Set("alive", alive);
 	dataMap.Set("timeOfBirth", timeOfBirth);
 	dataMap.Merge(genome->getStats());
-
-	initHistory();
 }
 
 Organism::Organism(shared_ptr<AbstractGenome> _genome, shared_ptr<AbstractBrain> _brain, shared_ptr<ParametersTable> _PT) {
@@ -89,8 +85,6 @@ Organism::Organism(shared_ptr<AbstractGenome> _genome, shared_ptr<AbstractBrain>
 	dataMap.Set("timeOfBirth", timeOfBirth);
 	dataMap.Merge(genome->getStats());
 	dataMap.Merge(brain->getStats());
-
-	initHistory();
 }
 
 /*
@@ -119,8 +113,6 @@ Organism::Organism(shared_ptr<Organism> from, shared_ptr<AbstractGenome> _genome
 	dataMap.Set("timeOfBirth", timeOfBirth);
 	dataMap.Merge(genome->getStats());
 	dataMap.Merge(brain->getStats());
-
-	initHistory();
 }
 
 /*
@@ -154,8 +146,6 @@ Organism::Organism(const vector<shared_ptr<Organism>> from, shared_ptr<AbstractG
 	dataMap.Set("timeOfBirth", timeOfBirth);
 	dataMap.Merge(genome->getStats());
 	dataMap.Merge(brain->getStats());
-
-	initHistory();
 }
 
 int Organism::registerOrganism() {
