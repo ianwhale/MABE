@@ -66,14 +66,14 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 
 	double trainingRate = genomeHandler->readDouble(0, 0.2);
 
-	int hiddenLayer = genomeHandler->readInt(1, 7);
+	int hiddenLayer = genomeHandler->readInt(1, 8);
 
 	//cout << "Number of nodes in hidden layer: " << hiddenLayer << endl;
 
 	vector<double> hiddenWeights;
 	//cout << "Weights: ";
 	// get a weight for every connection in the autoencoder
-	for (unsigned i = 0; i < hiddenLayer*7; i++) {
+	for (unsigned i = 0; i < hiddenLayer*8; i++) {
 		hiddenWeights.push_back(genomeHandler->readDouble(0, 1));
 		//cout << hiddenWeights.back() << " ";
 	}

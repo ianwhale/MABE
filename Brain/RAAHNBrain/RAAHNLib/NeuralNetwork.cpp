@@ -615,7 +615,7 @@ void NeuralNetwork::ComputeDistances(NoveltyBufferOccupant *occupant)
 		return;
 
 	//Only need one less than the number of novelty buffer occupants.
-	vector<DistanceDescription*> distanceDescriptions = vector<DistanceDescription*>(noveltyBuffer.size() - 1);
+	vector<DistanceDescription*> distanceDescriptions = vector<DistanceDescription*>();
 
 	for (NoveltyBufferOccupant *currentOccupant : noveltyBuffer)
 	{
