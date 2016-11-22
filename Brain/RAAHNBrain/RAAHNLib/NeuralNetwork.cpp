@@ -215,17 +215,17 @@ bool NeuralNetwork::ConnectGroups(NeuronGroup::Identifier *input, NeuronGroup::I
 	if (useBias)
 		neuronInOutCount++;
 
+	int oCount = oGroup->neurons.size();
 	for (unsigned x = 0; x < iGroup->neurons.size(); x++)
 	{
-		//Randomize weights.
 		for (unsigned y = 0; y < oGroup->neurons.size(); y++)
 		{
 			double range = sqrt(WEIGHT_RANGE_SCALE / neuronInOutCount);
 			//Keep in the range of [-range, range]
 
 			double weight;
-			if (presetWeights.size() > y) {
-				weight = (presetWeights[y] * range * DOUBLE_WEIGHT_RANGE) - range;
+			if (presetWeights.size() > x*oCount + y) {
+				weight = (presetWeights[x*oCount + y] * range * DOUBLE_WEIGHT_RANGE) - range;
 			}
 			else {
 				weight = (NextDouble() * range * DOUBLE_WEIGHT_RANGE) - range;

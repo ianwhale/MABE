@@ -65,22 +65,21 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	auto genomeHandler = genome->newHandler(genome);
 
 	double trainingRate = genomeHandler->readDouble(0, 0.2);
+
 	int hiddenLayer = genomeHandler->readInt(1, 7);
 
+	//cout << "Number of nodes in hidden layer: " << hiddenLayer << endl;
+
 	vector<double> hiddenWeights;
-	for (unsigned i = 0; i < hiddenLayer; i++) {
+	//cout << "Weights: ";
+	// get a weight for every connection in the autoencoder
+	for (unsigned i = 0; i < hiddenLayer*7; i++) {
 		hiddenWeights.push_back(genomeHandler->readDouble(0, 1));
+		//cout << hiddenWeights.back() << " ";
 	}
-	cout << endl;
+	//cout << endl;
 
 	int input_idx = ann->AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
-
-	//int hiddenLayer = 5;
-
-	//if (_nrInNodes <= 5) {
-	//	hiddenLayer = _nrInNodes - 1;
-	//}
-	cout << hiddenLayer << endl;
 
 	int hidden_idx = ann->AddNeuronGroup(hiddenLayer, NeuronGroup::Type::HIDDEN);
 	output_idx = ann->AddNeuronGroup(_nrOutNodes, NeuronGroup::Type::OUTPUT);
@@ -103,7 +102,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	unsigned modSig = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true, hiddenWeights);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, trainingRate, true, hiddenWeights);
 	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modSig, DEFAULT_SAMPLE_COUNT, DEFAULT_MODULATION_INDEX, true);
 
 	// Add noise.
@@ -123,14 +122,9 @@ void RAAHNBrain::update()
 {
 	vector<double> inputs;
 
-<<<<<<< HEAD
-	for (int i = 0; i < nrInNodes - 1; i++) // Get inputs.
-	{
-=======
-	int i;
-	for (i = 0; i < nrInNodes - 3; i++) // Get inputs.
+
+	for (int i = 2; i < nrInNodes; i++) // Get inputs.
 	{ 
->>>>>>> 6d1ea23d9153bcafd168ecce5bd83e4dc5450fe1
 		inputs.push_back(nodes[inputNodesList[i]]);
 	}
 
@@ -141,7 +135,7 @@ void RAAHNBrain::update()
 	//
 	// Need to add modulation signal and then call ann.Train()
 	//
-	double signal = (nodes[inputNodesList[i]] + nodes[inputNodesList[++i]]) / 2; // Average the modulation signals. 
+	double signal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2; // Average the modulation signals. 
 	ModulationSignal::SetSignal(modIndex, signal);
 
 	ann->Train();
@@ -176,7 +170,7 @@ shared_ptr<AbstractBrain> RAAHNBrain::makeBrainFromGenome(shared_ptr<AbstractGen
 void RAAHNBrain::initalizeGenome(shared_ptr<AbstractGenome> _genome)
 {
 	auto genomeHandler = _genome->newHandler(_genome);
-	for (int i = 0; i < 10; i++) {
-		genomeHandler->writeInt((int)ann->NextDouble(), 0, _MAX_INT_DIG);
+	for (int i = 0; i < 100; i++) {
+		genomeHandler->writeInt(Random::getInt(0, 255), 0, 255);
 	}
 }
