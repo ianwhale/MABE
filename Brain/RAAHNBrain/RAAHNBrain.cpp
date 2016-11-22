@@ -69,8 +69,7 @@ void RAAHNBrain::update()
 {
 	vector<double> inputs;
 
-	int i;
-	for (i = 0; i < nrInNodes - 3; i++) // Get inputs.
+	for (int i = 2; i < nrInNodes; i++) // Get inputs.
 	{ 
 		inputs.push_back(nodes[inputNodesList[i]]);
 	}
@@ -82,7 +81,7 @@ void RAAHNBrain::update()
 	//
 	// Need to add modulation signal and then call ann.Train()
 	//
-	double signal = (nodes[inputNodesList[i]] + nodes[inputNodesList[++i]]) / 2; // Average the modulation signals. 
+	double signal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2; // Average the modulation signals. 
 	ModulationSignal::SetSignal(modIndex, signal);
 
 	ann->Train();
