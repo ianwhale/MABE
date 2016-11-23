@@ -28,7 +28,7 @@ using std::string;
 	unsigned sampleUsageCount;
 
 
-	ConnectionGroup::ConnectionGroup(NeuralNetwork *network, NeuronGroup *inGroup, NeuronGroup *outGroup, bool useBias)
+	ConnectionGroup::ConnectionGroup(NeuralNetwork *network, shared_ptr<NeuronGroup> inGroup, shared_ptr<NeuronGroup> outGroup, bool useBias)
 	{
 		learningRate = DEFAULT_LEARNING_RATE;
 

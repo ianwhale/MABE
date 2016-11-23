@@ -3,9 +3,12 @@
 #include <random>
 #include <limits>
 #include <algorithm>
+#include <memory>
 
 using std::vector;
 using std::sort;
+using std::shared_ptr;
+using std::make_shared;
 
 NeuralNetwork::NeuralNetwork()
 {
@@ -201,10 +204,10 @@ bool NeuralNetwork::ConnectGroups(NeuronGroup::Identifier *input, NeuronGroup::I
 	if (!VerifyIdentifier(input) || !VerifyIdentifier(output))
 		return false;
 
-	NeuronGroup *iGroup = (*allListGroups[(int)input->type])[(int)input->index];
-	NeuronGroup *oGroup = (*allListGroups[(int)output->type])[(int)output->index];
+	shared_ptr<NeuronGroup> iGroup = (*allListGroups[(int)input->type])[(int)input->index];
+	shared_ptr<NeuronGroup> oGroup = (*allListGroups[(int)output->type])[(int)output->index];
 
-	ConnectionGroup *cGroup = new ConnectionGroup(this, iGroup, oGroup, useBias);
+	shared_ptr<ConnectionGroup> cGroup = make_shared<ConnectionGroup>(this, iGroup, oGroup, useBias);
 	cGroup->sampleUsageCount = sampleCount;
 	cGroup->SetLearningRate(learningRate);
 	cGroup->SetTrainingMethod(trainMethod);
@@ -259,7 +262,7 @@ int NeuralNetwork::AddNeuronGroup(unsigned neuronCount, NeuronGroup::Type type)
 	if (!VerifyType(type))
 		return NeuronGroup::INVALID_NEURON_INDEX;
 
-	NeuronGroup *newGroup = new NeuronGroup(this, type);
+	shared_ptr<NeuronGroup> newGroup = make_shared<NeuronGroup>(this, type);
 	newGroup->AddNeurons(neuronCount);
 	newGroup->type = type;
 
@@ -426,15 +429,15 @@ void NeuralNetwork::Construct(unsigned historySize, double outputNoiseMag, doubl
 
 	errorBuffer = deque<double>();
 
-	allListGroups = vector<vector<NeuronGroup*>*>();
+	allListGroups = vector<shared_ptr<vector<shared_ptr<NeuronGroup>>>>();
 
-	inputGroups = vector<NeuronGroup*>();
-	hiddenGroups = vector<NeuronGroup*>();
-	outputGroups = vector<NeuronGroup*>();
+	inputGroups = vector<shared_ptr<NeuronGroup>>();
+	hiddenGroups = vector<shared_ptr<NeuronGroup>>();
+	outputGroups = vector<shared_ptr<NeuronGroup>>();
 
-	allListGroups.push_back(&inputGroups);
-	allListGroups.push_back(&hiddenGroups);
-	allListGroups.push_back(&outputGroups);
+	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>(inputGroups));
+	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>(hiddenGroups));
+	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>(outputGroups));
 }
 
 //Set the inputs of the neural network to a given experience.

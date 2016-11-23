@@ -28,8 +28,8 @@ const double TrainingMethod::SPARSITY_WEIGHT = 0.1;
 
 
 //Autoencoder training with tied weights.
-double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, NeuronGroup *inGroup,
-	NeuronGroup *outGroup, vector<Connection*> connections, vector<double> biasWeights)
+double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
+	shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights)
 {
 	double weightCap = ann->GetWeightCap();
 
@@ -138,8 +138,8 @@ double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, Neura
 }
 
 //Sparse autoencoder training with tied weights.
-double TrainingMethod::SparseAutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, NeuronGroup *inGroup,
-	NeuronGroup *outGroup, vector<Connection*> connections, vector<double> biasWeights)
+double TrainingMethod::SparseAutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
+	shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights)
 {
 	double weightCap = ann->GetWeightCap();
 
@@ -260,8 +260,8 @@ double TrainingMethod::SparseAutoencoderTrain(int modIndex, double learningRate,
 }
 
 //Hebbian learning.
-double TrainingMethod::HebbianTrain(int modIndex, double learningRate, NeuralNetwork *ann, NeuronGroup *inGroup,
-	NeuronGroup *outGroup, vector<Connection*> connections, vector<double> biasWeights)
+double TrainingMethod::HebbianTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
+	shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights)
 {
 	double modSig = ModulationSignal::GetSignal(modIndex);
 

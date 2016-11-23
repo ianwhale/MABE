@@ -1,7 +1,9 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 using std::vector;
+using std::shared_ptr;
 
 class ConnectionGroup;
 class NeuralNetwork;
@@ -46,10 +48,10 @@ public:
 
 	void AddNeurons(unsigned count);
 
-	void AddIncomingGroup(ConnectionGroup *incomingGroup);
+	void AddIncomingGroup(shared_ptr<ConnectionGroup> incomingGroup);
 
 	//mostRecent refers to whether the group should train off of only the most recent experience.
-	void AddOutgoingGroup(ConnectionGroup *outgoingGroup, bool mostRecent);
+	void AddOutgoingGroup(shared_ptr<ConnectionGroup> outgoingGroup, bool mostRecent);
 
 	void UpdateAverages();
 
@@ -83,12 +85,12 @@ private:
 	const double DECAY_BASE = 0.01;
 
 	bool useNoise;
-	vector<ConnectionGroup*> incomingGroups;
+	vector<shared_ptr<ConnectionGroup>> incomingGroups;
 	//All outgoing groups.
-	vector<ConnectionGroup*> outgoingGroups;
+	vector<shared_ptr<ConnectionGroup>> outgoingGroups;
 	//Outgoing groups that train only off the most recent experience.
-	vector<ConnectionGroup*> outTrainRecent;
+	vector<shared_ptr<ConnectionGroup>> outTrainRecent;
 	//Outgoing groups that train off of several randomly selected experiences.
-	vector<ConnectionGroup*> outTrainSeveral;
+	vector<shared_ptr<ConnectionGroup>> outTrainSeveral;
 	NeuralNetwork *ann;
 };

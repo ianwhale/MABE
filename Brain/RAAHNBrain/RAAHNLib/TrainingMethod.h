@@ -16,16 +16,16 @@ public:
 	static const double NO_ERROR;
 
 	//Autoencoder training with tied weights.
-	static double AutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, NeuronGroup *inGroup,
-		NeuronGroup *outGroup, vector<Connection*> connections, vector<double> biasWeights);
+	static double AutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
+		shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights);
 
 	//Sparse autoencoder training with tied weights.
-	static double SparseAutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, NeuronGroup *inGroup,
-		NeuronGroup *outGroup, vector<Connection*> connections, vector<double> biasWeights);
+	static double SparseAutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
+		shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights);
 
 	//Hebbian learning.
-	static double HebbianTrain(int modIndex, double learningRate, NeuralNetwork *ann, NeuronGroup *inGroup,
-		NeuronGroup *outGroup, vector<Connection*> connections, vector<double> biasWeights);
+	static double HebbianTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
+		shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights);
 
 private:
 	static const double HEBBIAN_SCALE;

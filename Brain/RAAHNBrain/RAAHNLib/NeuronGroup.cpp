@@ -5,9 +5,11 @@
 
 #include <vector>
 #include <algorithm>
+#include <memory>
 
 using std::vector;
 using std::find;
+using std::shared_ptr;
 
 
 NeuronGroup::NeuronGroup(NeuralNetwork *network, Type t)
@@ -34,10 +36,10 @@ void NeuronGroup::Construct(NeuralNetwork *network, Type t)
 
 	neurons = vector<double>();
 
-	incomingGroups = vector<ConnectionGroup*>();
-	outgoingGroups = vector<ConnectionGroup*>();
-	outTrainRecent = vector<ConnectionGroup*>();
-	outTrainSeveral = vector<ConnectionGroup*>();
+	incomingGroups = vector<shared_ptr<ConnectionGroup>>();
+	outgoingGroups = vector<shared_ptr<ConnectionGroup>>();
+	outTrainRecent = vector<shared_ptr<ConnectionGroup>>();
+	outTrainSeveral = vector<shared_ptr<ConnectionGroup>>();
 }
 
 void NeuronGroup::AddNeurons(unsigned count)
@@ -46,7 +48,7 @@ void NeuronGroup::AddNeurons(unsigned count)
 		neurons.push_back(DEFAULT_NEURON_VALUE);
 }
 
-void NeuronGroup::AddIncomingGroup(ConnectionGroup *incomingGroup)
+void NeuronGroup::AddIncomingGroup(shared_ptr<ConnectionGroup> incomingGroup)
 {
 	incomingGroups.push_back(incomingGroup);
 
@@ -73,7 +75,7 @@ void NeuronGroup::AddIncomingGroup(ConnectionGroup *incomingGroup)
 }
 
 //mostRecent refers to whether the group should train off of only the most recent experience.
-void NeuronGroup::AddOutgoingGroup(ConnectionGroup *outgoingGroup, bool mostRecent)
+void NeuronGroup::AddOutgoingGroup(shared_ptr<ConnectionGroup> outgoingGroup, bool mostRecent)
 {
 	outgoingGroups.push_back(outgoingGroup);
 

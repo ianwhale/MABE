@@ -8,10 +8,12 @@
 #include <queue>
 #include <deque>
 #include <random>
+#include <memory>
 
 using std::deque;
 using std::queue;
 using std::vector;
+using std::shared_ptr;
 
 
 class NeuralNetwork
@@ -318,10 +320,10 @@ private:
 	double outputNoiseRange;
 	double weightNoiseRange;
 	double averageError;
-	vector<vector<NeuronGroup*>*> allListGroups;
-	vector<NeuronGroup*> inputGroups;
-	vector<NeuronGroup*> hiddenGroups;
-	vector<NeuronGroup*> outputGroups;
+	vector<shared_ptr<vector<shared_ptr<NeuronGroup>>>> allListGroups;
+	vector<shared_ptr<NeuronGroup>> inputGroups;
+	vector<shared_ptr<NeuronGroup>> hiddenGroups;
+	vector<shared_ptr<NeuronGroup>> outputGroups;
 	//Ordered from least novel to most novel.
 	vector<NoveltyBufferOccupant*> noveltyBuffer;
 	deque<double> errorBuffer;

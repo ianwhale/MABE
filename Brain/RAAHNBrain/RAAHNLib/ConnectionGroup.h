@@ -3,8 +3,10 @@
 #include "NeuronGroup.h"
 #include <string>
 #include <math.h>
+#include <memory>
 
 using std::string;
+using std::shared_ptr;
 
 class NeuralNetwork;
 class TrainingMethod;
@@ -28,7 +30,7 @@ public:
 	unsigned sampleUsageCount;
 
 	typedef double (*TrainFunctionType)(int modIndex, double learningRate, NeuralNetwork *ann,
-		NeuronGroup *inGroup, NeuronGroup *outGroup,
+		shared_ptr<NeuronGroup> inGroup, shared_ptr<NeuronGroup> outGroup,
 		vector<Connection*> connections, vector<double> biasWeights);
 
 	/*
@@ -39,7 +41,7 @@ public:
 	};
 	*/
 
-	ConnectionGroup(NeuralNetwork *network, NeuronGroup *inGroup, NeuronGroup *outGroup, bool useBias);
+	ConnectionGroup(NeuralNetwork *network, shared_ptr<NeuronGroup> inGroup, shared_ptr<NeuronGroup> outGroup, bool useBias);
 
 	void AddConnection(unsigned inputIndex, unsigned outputIndex, double weight);
 
@@ -91,8 +93,8 @@ public:
 		vector<double> biasWeights;
 		vector<Connection*> connections;
 		NeuralNetwork *ann;
-		NeuronGroup *inputGroup;
-		NeuronGroup *outputGroup;
+		shared_ptr<NeuronGroup> inputGroup;
+		shared_ptr<NeuronGroup> outputGroup;
 		TrainFunctionType trainingMethod;
 			
 		/*
