@@ -29,7 +29,7 @@ const double TrainingMethod::SPARSITY_WEIGHT = 0.1;
 
 //Autoencoder training with tied weights.
 double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
-	shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights)
+	shared_ptr<NeuronGroup> outGroup, vector<shared_ptr<Connection>> connections, vector<double> biasWeights)
 {
 	double weightCap = ann->GetWeightCap();
 
@@ -43,6 +43,7 @@ double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, Neura
 	double *reconstructions = new double[reconstructionCount];
 	double *errors = new double[reconstructionCount];
 	double *deltas = new double[reconstructionCount];
+
 	//No need to save backprop errors. Regular error is needed for reporting.
 	double *backPropDeltas = new double[featureCount];
 
@@ -134,12 +135,17 @@ double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, Neura
 	for (int i = 0; i < reconstructionCount; i++)
 		sumOfSquaredError += pow(errors[i], ERROR_POWER);
 
+	delete[] reconstructions;
+	delete[] errors;
+	delete[] deltas;
+	delete[] backPropDeltas;
+
 	return (sumOfSquaredError / ERROR_POWER);
 }
 
 //Sparse autoencoder training with tied weights.
 double TrainingMethod::SparseAutoencoderTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
-	shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights)
+	shared_ptr<NeuronGroup> outGroup, vector<shared_ptr<Connection>> connections, vector<double> biasWeights)
 {
 	double weightCap = ann->GetWeightCap();
 
@@ -256,12 +262,17 @@ double TrainingMethod::SparseAutoencoderTrain(int modIndex, double learningRate,
 	for (int i = 0; i < reconstructionCount; i++)
 		sumOfSquaredError += pow(errors[i], ERROR_POWER);
 
+	delete[] reconstructions;
+	delete[] errors;
+	delete[] deltas;
+	delete[] backPropDeltas;
+
 	return (sumOfSquaredError / ERROR_POWER);
 }
 
 //Hebbian learning.
 double TrainingMethod::HebbianTrain(int modIndex, double learningRate, NeuralNetwork *ann, shared_ptr<NeuronGroup> inGroup,
-	shared_ptr<NeuronGroup> outGroup, vector<Connection*> connections, vector<double> biasWeights)
+	shared_ptr<NeuronGroup> outGroup, vector<shared_ptr<Connection>> connections, vector<double> biasWeights)
 {
 	double modSig = ModulationSignal::GetSignal(modIndex);
 

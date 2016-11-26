@@ -3,6 +3,7 @@
 #include "TrainingMethod.h"
 #include "NeuralNetwork.h"
 
+#include <memory>
 #include <string>
 #include <math.h>
 
@@ -32,7 +33,7 @@ using std::string;
 	{
 		learningRate = DEFAULT_LEARNING_RATE;
 
-		connections = vector<Connection*>();
+		connections = vector<shared_ptr<Connection>>();
 
 		modSigIndex = ModulationSignal::INVALID_INDEX;
 
@@ -58,7 +59,7 @@ using std::string;
 
 	void ConnectionGroup::AddConnection(unsigned inputIndex, unsigned outputIndex, double weight)
 	{
-		connections.push_back(new Connection(inputIndex, outputIndex, weight));
+		connections.push_back(std::make_shared<Connection>(inputIndex, outputIndex, weight));
 	}
 
 	void ConnectionGroup::AddBiasWeights(unsigned outputCount)
@@ -208,6 +209,9 @@ using std::string;
 
 		for (int i = 0; i < reconstructionCount; i++)
 			sumOfSquaredError += pow(errors[i], TrainingMethod::ERROR_POWER);
+
+		delete[] reconstructions;
+		delete[] errors;
 
 		return (sumOfSquaredError / TrainingMethod::ERROR_POWER);
 	}

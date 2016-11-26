@@ -19,12 +19,8 @@ using std::shared_ptr;
 class NeuralNetwork
 {
 public:
-
-		
-
 	// FROM C# for reference: delegate double ActivationFunctionType(double x);
 	typedef double(*ActivationFunctionType)(double);
-
 
 	const unsigned DEFAULT_HISTORY_BUFFER_SIZE = 1;
 
@@ -39,7 +35,6 @@ public:
 	//Default to using the logistic function.
 	ActivationFunctionType activation = Activation::Logistic;
 	ActivationFunctionType activationDerivative = Activation::LogisticDerivative;
-
 
 	NeuralNetwork();
 
@@ -110,13 +105,8 @@ public:
 	//Get the strength of connections in a connection group.
 	vector<double> GetWeights(NeuronGroup::Identifier *fromGroup, NeuronGroup::Identifier *toGroup);
 
-	//Returns the Ids of all groups connected by outgoing connections to the specifed group.
+	//Returns the Ids of all groups connected by outgoing connections to the specified group.
 	vector<NeuronGroup::Identifier> GetGroupsConnected(NeuronGroup::Identifier *connectedTo);
-
-
-
-
-
 
 		class NoveltyBufferOccupant;
 
@@ -138,7 +128,7 @@ public:
 
 
 			double distance = 0.0;
-			NoveltyBufferOccupant *distanceOwner = nullptr;
+			shared_ptr<NoveltyBufferOccupant> distanceOwner = nullptr;
 		};
 
 		/*
@@ -170,8 +160,6 @@ public:
 
 		*/
 
-
-
 	class NoveltyBufferOccupant {
 	public:
 		NoveltyBufferOccupant() {};
@@ -191,7 +179,7 @@ public:
 
 		double noveltyScore = 0.0;
 		vector<double> experience;
-		vector<DistanceDescription*> distanceDescriptions;
+		vector<shared_ptr<DistanceDescription>> distanceDescriptions;
 	};
 
 	/*
@@ -236,18 +224,18 @@ public:
 	void UpdateOnlineError(double currentError);
 
 	//Add a new experience to the novelty buffer.
-	void AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, const vector<DistanceDescription*>& distDescriptions);
+	void AddNoveltyOccupant(shared_ptr<NoveltyBufferOccupant> newOccupant, const vector<shared_ptr<DistanceDescription>>& distDescriptions);
 
 	//Insert the distance if it is closer than the current farthest distance.
-	void TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceDescription *distDesc);
+	void TryInsertDistance(shared_ptr<NoveltyBufferOccupant> occupant, shared_ptr<DistanceDescription> distDesc);
 
 	//Remove an experience from the novelty buffer.
-	void RemoveNoveltyOccupant(NoveltyBufferOccupant *oldOccupant);
+	void RemoveNoveltyOccupant(shared_ptr<NoveltyBufferOccupant> oldOccupant);
 
 	void UpdateNoveltyScores();
 
 	//Expensive computation of distances for an experience already in buffer.
-	void ComputeDistances(NoveltyBufferOccupant *occupant);
+	void ComputeDistances(shared_ptr<NoveltyBufferOccupant> occupant);
 
 	//Makes sure a type is INPUT, HIDDEN, or OUTPUT.
 	bool VerifyType(NeuronGroup::Type type);
@@ -258,15 +246,12 @@ public:
 	double ExpDistance(const vector<double>& exp, const vector<double>& compare);
 
 	//Expensive computation of novelty score for a new experiences.
-	vector<DistanceDescription*> ComputeNewDistances(NoveltyBufferOccupant *occupant);
+	vector<shared_ptr<DistanceDescription>> ComputeNewDistances(shared_ptr<NoveltyBufferOccupant> occupant);
 
-
-
-
-
-
-
+	//
 	// ADDED HELPERS
+	//
+	
 	double NextDouble() {
 		return Random::getDouble(1);
 	}
@@ -295,7 +280,7 @@ public:
 		return historyBuffer.size();
 	}
 
-	vector<NoveltyBufferOccupant*> getNoveltyBuffer() {
+	vector<shared_ptr<NoveltyBufferOccupant>> getNoveltyBuffer() {
 		return noveltyBuffer;
 	}
 
@@ -303,15 +288,7 @@ public:
 		return historyBuffer;
 	}
 
-
-
-
-
-
-
 private:
-
-
 	unsigned historyBufferSize;
 	double weightCap;
 	double outputNoiseMagnitude;
@@ -325,7 +302,7 @@ private:
 	vector<shared_ptr<NeuronGroup>> hiddenGroups;
 	vector<shared_ptr<NeuronGroup>> outputGroups;
 	//Ordered from least novel to most novel.
-	vector<NoveltyBufferOccupant*> noveltyBuffer;
+	vector<shared_ptr<NoveltyBufferOccupant>> noveltyBuffer;
 	deque<double> errorBuffer;
 	deque<vector<double>> historyBuffer;
 

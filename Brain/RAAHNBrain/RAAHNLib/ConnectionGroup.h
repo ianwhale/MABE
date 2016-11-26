@@ -31,7 +31,7 @@ public:
 
 	typedef double (*TrainFunctionType)(int modIndex, double learningRate, NeuralNetwork *ann,
 		shared_ptr<NeuronGroup> inGroup, shared_ptr<NeuronGroup> outGroup,
-		vector<Connection*> connections, vector<double> biasWeights);
+		vector<shared_ptr<Connection>> connections, vector<double> biasWeights);
 
 	/*
 	struct TrainFunctionType{
@@ -91,7 +91,7 @@ public:
 		//Learning rate for all connections within the group.
 		double learningRate;
 		vector<double> biasWeights;
-		vector<Connection*> connections;
+		vector<shared_ptr<Connection>> connections;
 		NeuralNetwork *ann;
 		shared_ptr<NeuronGroup> inputGroup;
 		shared_ptr<NeuronGroup> outputGroup;

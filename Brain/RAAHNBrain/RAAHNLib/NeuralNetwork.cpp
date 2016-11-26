@@ -43,14 +43,14 @@ void NeuralNetwork::AddExperience(vector<double> newExperience)
 	if (useNovelty)
 	{
 		//Allocate a NoveltyBufferOccupant for the new experience.
-		NoveltyBufferOccupant *newOccupant = new NoveltyBufferOccupant();
+		shared_ptr<NoveltyBufferOccupant> newOccupant = make_shared<NoveltyBufferOccupant>();
 		newOccupant->experience = newExperience;
-		vector<DistanceDescription*> newDistances = ComputeNewDistances(newOccupant);
+		vector<shared_ptr<DistanceDescription>> newDistances = ComputeNewDistances(newOccupant);
 
 		//Check if the buffer is at capacity.
 		if (noveltyBuffer.size() == historyBufferSize)
 		{
-			NoveltyBufferOccupant *leastNovel = noveltyBuffer[0];
+			shared_ptr<NoveltyBufferOccupant> leastNovel = noveltyBuffer[0];
 
 			//If the new experience is more novel than the least novel
 			//then remove the least novel than add the new experience.
@@ -423,7 +423,7 @@ void NeuralNetwork::Construct(unsigned historySize, double outputNoiseMag, doubl
 	int historyBufferSizei = (int)historyBufferSize;
 
 	if (useNovelty)
-		noveltyBuffer = vector<NoveltyBufferOccupant*>();
+		noveltyBuffer = vector<shared_ptr<NoveltyBufferOccupant>>();
 	else
 		historyBuffer = deque<vector<double>>();
 
@@ -507,15 +507,14 @@ void NeuralNetwork::UpdateOnlineError(double currentError)
 }
 
 //Add a new experience to the novelty buffer.
-void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, const vector<DistanceDescription*>& distDescriptions)
+void NeuralNetwork::AddNoveltyOccupant(shared_ptr<NoveltyBufferOccupant> newOccupant, const vector<shared_ptr<DistanceDescription>>& distDescriptions)
 {
 	//Add the distance for the new occupant to each other and to itself if needed.
 	for (unsigned i = 0; i < noveltyBuffer.size(); i++)
 	{
-		DistanceDescription *newDes = new DistanceDescription();
+		shared_ptr<DistanceDescription> newDes = make_shared<DistanceDescription>();
 		newDes->distance = distDescriptions[i]->distance;
 		newDes->distanceOwner = newOccupant;
-
 
 		TryInsertDistance(noveltyBuffer[i], newDes);
 	}
@@ -528,7 +527,7 @@ void NeuralNetwork::AddNoveltyOccupant(NoveltyBufferOccupant *newOccupant, const
 
 //Insert the distance if it is closer than the current farthest distance.
 #pragma optimize( "", off)
-void NeuralNetwork::TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceDescription *distDesc)
+void NeuralNetwork::TryInsertDistance(shared_ptr<NoveltyBufferOccupant> occupant, shared_ptr<DistanceDescription> distDesc)
 {
 	//Only check if a distance cache removal is needed if the distance cache is full.
 	if (occupant->distanceDescriptions.size() >= N_NEAREST)
@@ -564,13 +563,13 @@ void NeuralNetwork::TryInsertDistance(NoveltyBufferOccupant *occupant, DistanceD
 }
 
 //Remove an experience from the novelty buffer.
-void NeuralNetwork::RemoveNoveltyOccupant(NoveltyBufferOccupant *oldOccupant)
+void NeuralNetwork::RemoveNoveltyOccupant(shared_ptr<NoveltyBufferOccupant> oldOccupant)
 {
 	auto itr = find(noveltyBuffer.begin(), noveltyBuffer.end(), oldOccupant);
 	if (itr != noveltyBuffer.end())
 		noveltyBuffer.erase(itr); // TODO: verify
 
-	for (NoveltyBufferOccupant *occupant : noveltyBuffer)
+	for (auto occupant : noveltyBuffer)
 	{
 		for (auto it = occupant->distanceDescriptions.begin(); it != occupant->distanceDescriptions.end(); it++)
 		{
@@ -591,7 +590,7 @@ void NeuralNetwork::RemoveNoveltyOccupant(NoveltyBufferOccupant *oldOccupant)
 
 void NeuralNetwork::UpdateNoveltyScores()
 {
-	for (NoveltyBufferOccupant *occupant : noveltyBuffer)
+	for (auto occupant : noveltyBuffer)
 	{
 		unsigned distancesToSum = occupant->distanceDescriptions.size();
 
@@ -612,22 +611,22 @@ void NeuralNetwork::UpdateNoveltyScores()
 }
 
 //Expensive computation of distances for an experience already in buffer.
-void NeuralNetwork::ComputeDistances(NoveltyBufferOccupant *occupant)
+void NeuralNetwork::ComputeDistances(shared_ptr<NoveltyBufferOccupant> occupant)
 {
 	if (noveltyBuffer.size() == 0)
 		return;
 
 	//Only need one less than the number of novelty buffer occupants.
-	vector<DistanceDescription*> distanceDescriptions = vector<DistanceDescription*>();
+	vector<shared_ptr<DistanceDescription>> distanceDescriptions = vector<shared_ptr<DistanceDescription>>();
 
-	for (NoveltyBufferOccupant *currentOccupant : noveltyBuffer)
+	for (shared_ptr<NoveltyBufferOccupant> currentOccupant : noveltyBuffer)
 	{
 		//Don't include the least novel occupant->
 		if (currentOccupant != occupant)
 		{
 			double distance = ExpDistance(occupant->experience, currentOccupant->experience);
 
-			DistanceDescription *newDescription = new DistanceDescription();
+			shared_ptr<DistanceDescription> newDescription = make_shared<DistanceDescription>();
 			newDescription->distance = distance;
 			newDescription->distanceOwner = currentOccupant;
 
@@ -680,22 +679,22 @@ double NeuralNetwork::ExpDistance(const vector<double>& exp, const vector<double
 }
 
 //Expensive computation of novelty score for a new experiences.
-vector<NeuralNetwork::DistanceDescription*> NeuralNetwork::ComputeNewDistances(NoveltyBufferOccupant *occupant)
+vector<shared_ptr<NeuralNetwork::DistanceDescription>> NeuralNetwork::ComputeNewDistances(shared_ptr<NoveltyBufferOccupant> occupant)
 {
 	if (noveltyBuffer.size() == 0)
-		return vector<NeuralNetwork::DistanceDescription*>();
+		return vector<shared_ptr<NeuralNetwork::DistanceDescription>>();
 
-	vector<DistanceDescription*> distanceDescriptions = vector<NeuralNetwork::DistanceDescription*>();
+	vector<shared_ptr<DistanceDescription>> distanceDescriptions = vector<shared_ptr<NeuralNetwork::DistanceDescription>>();
 
 	if (noveltyBuffer.size() < historyBufferSize)
 	{
-		distanceDescriptions = vector<DistanceDescription*>();
+		distanceDescriptions = vector<shared_ptr<DistanceDescription>>();
 
-		for(NoveltyBufferOccupant *currentOccupant : noveltyBuffer)
+		for(auto currentOccupant : noveltyBuffer)
 		{
 			double distance = ExpDistance(occupant->experience, currentOccupant->experience);
 
-			DistanceDescription *newDescription = new DistanceDescription();
+			shared_ptr<DistanceDescription> newDescription = make_shared<DistanceDescription>();
 			newDescription->distanceOwner = currentOccupant;
 			newDescription->distance = distance;
 
@@ -705,16 +704,16 @@ vector<NeuralNetwork::DistanceDescription*> NeuralNetwork::ComputeNewDistances(N
 	else
 	{
 		//Only need one less than the number of novelty buffer occupants.
-		distanceDescriptions = vector<DistanceDescription*>();
+		distanceDescriptions = vector<shared_ptr<DistanceDescription>>();
 
 		//Don't include the least novel occupant in the distance cache.
 		for (unsigned i = 1; i < noveltyBuffer.size(); i++)
 		{
-			NoveltyBufferOccupant *currentOccupant = noveltyBuffer[i];
+			shared_ptr<NoveltyBufferOccupant> currentOccupant = noveltyBuffer[i];
 
 			double distance = ExpDistance(occupant->experience, currentOccupant->experience);
 
-			DistanceDescription *newDescription = new DistanceDescription();
+			shared_ptr<DistanceDescription> newDescription = make_shared<DistanceDescription>();
 			newDescription->distanceOwner = currentOccupant;
 			newDescription->distance = distance;
 
@@ -724,13 +723,17 @@ vector<NeuralNetwork::DistanceDescription*> NeuralNetwork::ComputeNewDistances(N
 
 	//Copy the distances for sorting. The original list order is maintained 
 	//so its distances can easily be added to the other novelty buffer occupants.
-	vector<DistanceDescription*> sortedList = vector<DistanceDescription*>();
+	vector<shared_ptr<DistanceDescription>> sortedList = vector<shared_ptr<DistanceDescription>>();
 
 	for (unsigned i = 0; i < distanceDescriptions.size(); i++)
 		sortedList.push_back(distanceDescriptions[i]);
 
 	//sortedList.Sort();
-	sort(sortedList.begin(), sortedList.end());
+	sort(sortedList.begin(), sortedList.end(), 
+		[](const shared_ptr<DistanceDescription> & a, const shared_ptr<DistanceDescription> & b)
+	{
+		return *a < *b;
+	});
 
 	//Find out how many elements to keep in the occupant's distance caches.
 	int keepCount = sortedList.size();

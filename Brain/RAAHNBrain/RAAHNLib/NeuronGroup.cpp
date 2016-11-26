@@ -174,7 +174,7 @@ double NeuronGroup::TrainSeveral()
 	{
 		if (ann->useNovelty)
 		{
-			for (NeuralNetwork::NoveltyBufferOccupant *occupant : ann->getNoveltyBuffer())
+			for (auto occupant : ann->getNoveltyBuffer())
 				samples.push_back(occupant->experience);
 		}
 		else
