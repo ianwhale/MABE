@@ -45,7 +45,7 @@ public:
 	NeuralNetwork(unsigned historySize, double outputNoiseMag, double weightNoiseMag, bool useNoveltyBuffer);
 
 	//Adds a training sample to the history buffer.
-	void AddExperience(vector<double> newExperience);
+	void AddExperience(const vector<double> & newExperience);
 
 	//Public access for setting an experience.
 	void SetExperience(unsigned index);
@@ -219,7 +219,7 @@ public:
 	void Construct(unsigned historySize, double outputNoiseMag, double weightNoiseMag, bool useNoveltyBuffer);
 
 	//Set the inputs of the neural network to a given experience.
-	void SetExperience(vector<double> sample);
+	void SetExperience(const vector<double> & sample);
 
 	void UpdateOnlineError(double currentError);
 

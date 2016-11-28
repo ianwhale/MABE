@@ -37,7 +37,7 @@ NeuralNetwork::NeuralNetwork(unsigned historySize, double outputNoiseMag, double
 }
 
 //Adds a training sample to the history buffer.
-void NeuralNetwork::AddExperience(vector<double> newExperience)
+void NeuralNetwork::AddExperience(const vector<double> & newExperience)
 {
 	//Check which buffer to use.
 	if (useNovelty)
@@ -441,7 +441,7 @@ void NeuralNetwork::Construct(unsigned historySize, double outputNoiseMag, doubl
 }
 
 //Set the inputs of the neural network to a given experience.
-void NeuralNetwork::SetExperience(vector<double> sample)
+void NeuralNetwork::SetExperience(const vector<double> & sample)
 {
 	int dataCount = sample.size();
 	int sampleIndex = 0;
