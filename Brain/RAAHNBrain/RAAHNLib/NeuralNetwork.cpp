@@ -1,5 +1,6 @@
 #include "NeuralNetwork.h"
 #include <vector>
+#include <iostream>
 #include <random>
 #include <limits>
 #include <algorithm>
@@ -105,17 +106,17 @@ void NeuralNetwork::PropagateSignal()
 {
 	//Reset the computed state of hidden layer neurons.
 	//Also reset the values for hidden and output neurons.
-	for (unsigned i = 0; i < hiddenGroups.size(); i++)
+	for (unsigned i = 0; i < hiddenGroups->size(); i++)
 	{
-		hiddenGroups[i]->computed = false;
-		hiddenGroups[i]->Reset();
+		(*hiddenGroups)[i]->computed = false;
+		(*hiddenGroups)[i]->Reset();
 	}
 
-	for (unsigned i = 0; i < outputGroups.size(); i++)
-		outputGroups[i]->Reset();
+	for (unsigned i = 0; i < outputGroups->size(); i++)
+		(*outputGroups)[i]->Reset();
 
-	for (unsigned i = 0; i < outputGroups.size(); i++)
-		outputGroups[i]->ComputeSignal();
+	for (unsigned i = 0; i < outputGroups->size(); i++)
+		(*outputGroups)[i]->ComputeSignal();
 }
 
 //Returns autoencoder error.
@@ -123,17 +124,17 @@ void NeuralNetwork::Train()
 {
 	double error = 0.0;
 
-	for (unsigned i = 0; i < inputGroups.size(); i++)
-		error += inputGroups[i]->TrainRecent();
+	for (unsigned i = 0; i < inputGroups->size(); i++)
+		error += (*inputGroups)[i]->TrainRecent();
 
-	for (unsigned i = 0; i < hiddenGroups.size(); i++)
-		error += hiddenGroups[i]->TrainRecent();
+	for (unsigned i = 0; i < hiddenGroups->size(); i++)
+		error += (*hiddenGroups)[i]->TrainRecent();
 
-	for (unsigned i = 0; i < inputGroups.size(); i++)
-		error += inputGroups[i]->TrainSeveral();
+	for (unsigned i = 0; i < inputGroups->size(); i++)
+		error += (*inputGroups)[i]->TrainSeveral();
 
-	for (unsigned i = 0; i < hiddenGroups.size(); i++)
-		error += hiddenGroups[i]->TrainSeveral();
+	for (unsigned i = 0; i < hiddenGroups->size(); i++)
+		error += (*hiddenGroups)[i]->TrainSeveral();
 
 	UpdateOnlineError(error);
 }
@@ -181,15 +182,15 @@ void NeuralNetwork::SetWeightNoiseMagnitude(double weightNoiseMag)
 //Returns whether the output was able to be set.
 bool NeuralNetwork::SetOutput(unsigned groupIndex, unsigned index, double value)
 {
-	if (groupIndex >= outputGroups.size())
+	if (groupIndex >= outputGroups->size())
 		return false;
 
 	int groupIndexi = (int)groupIndex;
 
-	if (index >= outputGroups[groupIndexi]->neurons.size())
+	if (index >= (*outputGroups)[groupIndexi]->neurons.size())
 		return false;
 
-	outputGroups[groupIndexi]->neurons[(int)index] = value;
+	(*outputGroups)[groupIndexi]->neurons[(int)index] = value;
 
 	return true;
 }
@@ -270,8 +271,8 @@ int NeuralNetwork::AddNeuronGroup(unsigned neuronCount, NeuronGroup::Type type)
 	{
 	case NeuronGroup::Type::INPUT:
 	{
-		inputGroups.push_back(newGroup);
-		int groupIndex = inputGroups.size() - 1;
+		(*inputGroups).push_back(newGroup);
+		int groupIndex = inputGroups->size() - 1;
 
 		newGroup->index = groupIndex;
 
@@ -279,8 +280,8 @@ int NeuralNetwork::AddNeuronGroup(unsigned neuronCount, NeuronGroup::Type type)
 	}
 	case NeuronGroup::Type::HIDDEN:
 	{
-		hiddenGroups.push_back(newGroup);
-		int groupIndex = hiddenGroups.size() - 1;
+		(*hiddenGroups).push_back(newGroup);
+		int groupIndex = hiddenGroups->size() - 1;
 
 		newGroup->index = groupIndex;
 
@@ -288,8 +289,8 @@ int NeuralNetwork::AddNeuronGroup(unsigned neuronCount, NeuronGroup::Type type)
 	}
 	case NeuronGroup::Type::OUTPUT:
 	{
-		outputGroups.push_back(newGroup);
-		int groupIndex = outputGroups.size() - 1;
+		(*outputGroups).push_back(newGroup);
+		int groupIndex = outputGroups->size() - 1;
 
 		newGroup->index = groupIndex;
 
@@ -325,13 +326,13 @@ double NeuralNetwork::GetNeuronValue(NeuronGroup::Identifier *ident, unsigned ne
 //Returns double.Nan if the neuron or neuron group does not exist.
 double NeuralNetwork::GetOutputValue(unsigned groupIndex, unsigned index)
 {
-	if (groupIndex >= outputGroups.size())
+	if (groupIndex >= outputGroups->size())
 		return std::numeric_limits<double>::quiet_NaN();
 
-	if (index >= outputGroups[(int)groupIndex]->neurons.size())
+	if (index >= (*outputGroups)[(int)groupIndex]->neurons.size())
 		return std::numeric_limits<double>::quiet_NaN();
 
-	return outputGroups[(int)groupIndex]->neurons[(int)index];
+	return (*outputGroups)[(int)groupIndex]->neurons[(int)index];
 }
 
 //Returns the sum of the squared reconstruction error for the current sample.
@@ -341,11 +342,11 @@ double NeuralNetwork::CalculateBatchError()
 
 	double error = 0.0;
 
-	for (unsigned i = 0; i < inputGroups.size(); i++)
-		error += inputGroups[i]->GetReconstructionError();
+	for (unsigned i = 0; i < inputGroups->size(); i++)
+		error += (*inputGroups)[i]->GetReconstructionError();
 
-	for (unsigned i = 0; i < hiddenGroups.size(); i++)
-		error += hiddenGroups[i]->GetReconstructionError();
+	for (unsigned i = 0; i < hiddenGroups->size(); i++)
+		error += (*hiddenGroups)[i]->GetReconstructionError();
 
 	return error;
 }
@@ -431,13 +432,17 @@ void NeuralNetwork::Construct(unsigned historySize, double outputNoiseMag, doubl
 
 	allListGroups = vector<shared_ptr<vector<shared_ptr<NeuronGroup>>>>();
 
-	inputGroups = vector<shared_ptr<NeuronGroup>>();
-	hiddenGroups = vector<shared_ptr<NeuronGroup>>();
-	outputGroups = vector<shared_ptr<NeuronGroup>>();
+	// inputGroups = vector<shared_ptr<NeuronGroup>>();
+	// hiddenGroups = vector<shared_ptr<NeuronGroup>>();
+	// outputGroups = vector<shared_ptr<NeuronGroup>>();
 
-	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>(inputGroups));
-	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>(hiddenGroups));
-	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>(outputGroups));
+	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>());
+	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>());
+	allListGroups.push_back(make_shared<vector<shared_ptr<NeuronGroup>>>());
+
+	inputGroups = allListGroups[0];
+	hiddenGroups = allListGroups[1];
+	outputGroups = allListGroups[2];
 }
 
 //Set the inputs of the neural network to a given experience.
@@ -446,12 +451,12 @@ void NeuralNetwork::SetExperience(const vector<double> & sample)
 	int dataCount = sample.size();
 	int sampleIndex = 0;
 
-	for (unsigned x = 0; x < inputGroups.size(); x++)
+	for (unsigned x = 0; x < inputGroups->size(); x++)
 	{
 		if (dataCount <= 0)
 			break;
 
-		int neuronCount = inputGroups[x]->neurons.size();
+		int neuronCount = (*inputGroups)[x]->neurons.size();
 
 		//If there is to little data use only what is provided.
 		if (dataCount < neuronCount)
@@ -459,7 +464,7 @@ void NeuralNetwork::SetExperience(const vector<double> & sample)
 
 		for (int y = 0; y < neuronCount; y++)
 		{
-			inputGroups[x]->neurons[y] = sample[sampleIndex];
+			(*inputGroups)[x]->neurons[y] = sample[sampleIndex];
 			sampleIndex++;
 		}
 
@@ -661,6 +666,8 @@ bool NeuralNetwork::VerifyIdentifier(NeuronGroup::Identifier *ident)
 {
 	if (!VerifyType(ident->type))
 		return false;
+
+	std::cout << ((int)allListGroups[(int)ident->type]->size()) << std::endl;
 
 	if (ident->index < 0 || ident->index >= (int)allListGroups[(int)ident->type]->size())
 		return false;

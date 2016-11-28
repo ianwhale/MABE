@@ -298,9 +298,9 @@ private:
 	double weightNoiseRange;
 	double averageError;
 	vector<shared_ptr<vector<shared_ptr<NeuronGroup>>>> allListGroups;
-	vector<shared_ptr<NeuronGroup>> inputGroups;
-	vector<shared_ptr<NeuronGroup>> hiddenGroups;
-	vector<shared_ptr<NeuronGroup>> outputGroups;
+	shared_ptr<vector<shared_ptr<NeuronGroup>>> inputGroups;
+	shared_ptr<vector<shared_ptr<NeuronGroup>>> hiddenGroups;
+	shared_ptr<vector<shared_ptr<NeuronGroup>>> outputGroups;
 	//Ordered from least novel to most novel.
 	vector<shared_ptr<NoveltyBufferOccupant>> noveltyBuffer;
 	deque<double> errorBuffer;
