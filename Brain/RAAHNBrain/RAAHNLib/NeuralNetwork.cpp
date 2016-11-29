@@ -667,8 +667,6 @@ bool NeuralNetwork::VerifyIdentifier(NeuronGroup::Identifier *ident)
 	if (!VerifyType(ident->type))
 		return false;
 
-	std::cout << ((int)allListGroups[(int)ident->type]->size()) << std::endl;
-
 	if (ident->index < 0 || ident->index >= (int)allListGroups[(int)ident->type]->size())
 		return false;
 

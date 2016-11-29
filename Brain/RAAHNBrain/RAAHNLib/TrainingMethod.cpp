@@ -40,12 +40,12 @@ double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, Neura
 	if (biasWeights.size() != 0)
 		reconstructionCount++;
 
-	double *reconstructions = new double[reconstructionCount];
-	double *errors = new double[reconstructionCount];
-	double *deltas = new double[reconstructionCount];
+	vector<double> reconstructions(reconstructionCount, 0);
+	vector<double> errors(reconstructionCount, 0);
+	vector<double> deltas(reconstructionCount, 0);
 
 	//No need to save backprop errors. Regular error is needed for reporting.
-	double *backPropDeltas = new double[featureCount];
+	vector<double> backPropDeltas(featureCount, 0);
 
 	//If there is a bias neuron, it's reconstruction and error will be the last value in each.
 	int biasRecIndex = reconstructionCount - 1;
@@ -135,11 +135,6 @@ double TrainingMethod::AutoencoderTrain(int modIndex, double learningRate, Neura
 	for (int i = 0; i < reconstructionCount; i++)
 		sumOfSquaredError += pow(errors[i], ERROR_POWER);
 
-	delete[] reconstructions;
-	delete[] errors;
-	delete[] deltas;
-	delete[] backPropDeltas;
-
 	return (sumOfSquaredError / ERROR_POWER);
 }
 
@@ -156,11 +151,12 @@ double TrainingMethod::SparseAutoencoderTrain(int modIndex, double learningRate,
 	if (biasWeights.size() != 0)
 		reconstructionCount++;
 
-	double *reconstructions = new double[reconstructionCount];
-	double *errors = new double[reconstructionCount];
-	double *deltas = new double[reconstructionCount];
+	vector<double> reconstructions(reconstructionCount, 0);
+	vector<double> errors(reconstructionCount, 0);
+	vector<double> deltas(reconstructionCount, 0);
+
 	//No need to save backprop errors. Regular error is needed for reporting.
-	double *backPropDeltas = new double[featureCount];
+	vector<double> backPropDeltas(featureCount, 0);
 
 	//If there is a bias neuron, it's reconstruction and error will be the last value in each.
 	int biasRecIndex = reconstructionCount - 1;
@@ -261,11 +257,6 @@ double TrainingMethod::SparseAutoencoderTrain(int modIndex, double learningRate,
 
 	for (int i = 0; i < reconstructionCount; i++)
 		sumOfSquaredError += pow(errors[i], ERROR_POWER);
-
-	delete[] reconstructions;
-	delete[] errors;
-	delete[] deltas;
-	delete[] backPropDeltas;
 
 	return (sumOfSquaredError / ERROR_POWER);
 }
