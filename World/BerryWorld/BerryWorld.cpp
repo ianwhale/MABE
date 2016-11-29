@@ -718,7 +718,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				group->population[orgIndex]->brain->setInput(8, c_6);
 				group->population[orgIndex]->brain->setInput(9, c_7);
 
-				// Set average as 9th input. 
+				// Set average as 2nd input. 
 				double sum = foodRewards[front - 1] + foodRewards[leftFront - 1] + foodRewards[rightFront - 1] + foodRewards[c_1 - 1]
 					+ foodRewards[c_4 - 1] + foodRewards[c_6 - 1] + foodRewards[c_5 - 1] + foodRewards[c_7 - 1];
 				group->population[orgIndex]->brain->setInput(0, sum / 8);

@@ -16,13 +16,23 @@
 class RAAHNBrain : public AbstractBrain
 {
 public:
-	double const DEFAULT_OUTPUT_NOISE_MAGNITUDE = 0.1;
-	double const DEFAULT_WEIGHT_NOISE_MAGNITUDE = 0.1;
-	double const DEFAULT_MODULATION_INDEX = 0.1;
-	unsigned const DEFAULT_SAMPLE_COUNT = 10;
-	unsigned const DEFAULT_HISTORY_BUFFER_SIZE = 25;
+	static shared_ptr<ParameterLink<double>> outputNoisePL;
+	static shared_ptr<ParameterLink<double>> weightNoisePL;
+	static shared_ptr<ParameterLink<double>> learningRatePL;
+	static shared_ptr<ParameterLink<int>> sampleCountPL;
+	static shared_ptr<ParameterLink<int>> historyBufferSizePL;
+	static shared_ptr<ParameterLink<int>> hiddenNodesPL;
+	static shared_ptr<ParameterLink<bool>> evolvingPL;
+
+	double outputNoise;
+	double weightNoise;
+	double learningRate;
+	int hiddenNodes;
+	int sampleCount;
+	int historyBufferSize;
+	bool evolving;
+
 	const bool DEFAULT_NOVELTY_USE = true;
-	
 	
 	RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT = nullptr);
 	RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shared_ptr<ParametersTable> _PT = nullptr);
