@@ -11,6 +11,23 @@ using std::sort;
 using std::shared_ptr;
 using std::make_shared;
 
+void NeuralNetwork::printWeights()
+{
+	// Print the incoming connection weights of the hidden layer.
+	// In other words, the autoencoder layer. 
+	for (unsigned i = 0; i < hiddenGroups->size(); i++)
+	{
+		(*hiddenGroups)[i]->printIncomingWeights();
+	}
+
+	// Print the outgoing connection weights of the hidden layer.
+	// This is the Hebbian layer.
+	for (unsigned i = 0; i < hiddenGroups->size(); i++)
+	{
+		(*hiddenGroups)[i]->printOutgoingWeights();
+	}
+}
+
 NeuralNetwork::NeuralNetwork()
 {
 	Construct(DEFAULT_HISTORY_BUFFER_SIZE, DEFAULT_NOISE_MAGNITUDE, DEFAULT_NOISE_MAGNITUDE, DEFAULT_NOVELTY_USE);

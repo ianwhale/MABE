@@ -78,6 +78,8 @@ public:
 
 	double GetReconstructionError();
 
+	void printIncomingWeights();
+	void printOutgoingWeights();
 
 private:
 

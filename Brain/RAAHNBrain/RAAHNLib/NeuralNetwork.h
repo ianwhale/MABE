@@ -36,6 +36,8 @@ public:
 	ActivationFunctionType activation = Activation::Logistic;
 	ActivationFunctionType activationDerivative = Activation::LogisticDerivative;
 
+	void printWeights();
+
 	NeuralNetwork();
 
 	NeuralNetwork(unsigned historySize, bool useNoveltyBuffer);

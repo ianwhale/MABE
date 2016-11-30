@@ -83,6 +83,9 @@ public:
 	//Returns a copy of the weights.
 	vector<double> GetWeights();
 
+	// Gets a constant reference to the weights. 
+	const vector<double> & GetWeightsRef();
+
 	private:
 		const string WEIGHTS_FILE = "weights.txt";
 

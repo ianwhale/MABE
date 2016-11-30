@@ -154,9 +154,15 @@ void RAAHNBrain::update()
 		nodes[outputNodesList[i]] = out;
 	}
 
+	cout << "Weights before training: " << endl;
+	ann->printWeights();
+
 	double signal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2; // Average the modulation signals. 
 	ModulationSignal::SetSignal(modIndex, signal);
 	ann->Train();
+
+	cout << "Weights after training: " << endl;
+	ann->printWeights();
 }
 
 string RAAHNBrain::description()

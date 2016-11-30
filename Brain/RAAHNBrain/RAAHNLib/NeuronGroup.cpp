@@ -6,11 +6,11 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <iostream>
 
 using std::vector;
 using std::find;
 using std::shared_ptr;
-
 
 NeuronGroup::NeuronGroup(NeuralNetwork *network, Type t)
 {
@@ -277,3 +277,31 @@ double NeuronGroup::GetReconstructionError()
 
 	return error;
 }				
+
+// Print the weights of the connections in the incoming layer.
+void NeuronGroup::printIncomingWeights()
+{
+	for (unsigned i = 0; i < incomingGroups.size(); i++)
+	{
+		std::cout << "Incoming group at index " << i << ": ";
+		for (auto weight : incomingGroups[i]->GetWeightsRef())
+		{
+			std::cout << weight << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
+// Print the weights of the connections in the outgoing layer. 
+void NeuronGroup::printOutgoingWeights()
+{
+	for (unsigned i = 0; i < outgoingGroups.size(); i++)
+	{
+		std::cout << "Outgoing group at index " << i << ": ";
+		for (auto weight : outgoingGroups[i]->GetWeightsRef())
+		{
+			std::cout << weight << " ";
+		}
+		std::cout << std::endl << std::endl;
+	}
+}

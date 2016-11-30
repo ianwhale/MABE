@@ -278,3 +278,19 @@ using std::string;
 		return weights;
 	}
 
+	// Constant reference to weights when a copy is not needed. 
+	const vector<double> & ConnectionGroup::GetWeightsRef()
+	{
+		vector<double> weights = vector<double>();
+
+		for (unsigned i = 0; i < connections.size(); i++)
+			weights.push_back(connections[i]->weight);
+
+		if (usingBias)
+		{
+			for (unsigned i = 0; i < biasWeights.size(); i++)
+				weights.push_back(biasWeights[i]);
+		}
+
+		return weights;
+	}
