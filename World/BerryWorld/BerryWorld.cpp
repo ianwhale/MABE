@@ -111,6 +111,7 @@ bool loadLineToSS(ifstream& FILE, string& rawLine, stringstream& ss) {
 
 bool BerryWorld::WorldMap::loadMap(ifstream& FILE, const string _fileName, shared_ptr<ParametersTable> parentPT) {
 	fileName = _fileName;
+	cout << _fileName << endl;
 	string parameterName, parameterValue;
 	grid.resize(0);
 	string rawLine, rubbishString;
@@ -855,6 +856,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				// set output values
 				// output1 has info about the first 2 output bits these [00 eat, 10 left, 01 right, 11 move]
 				output1 = Bit(group->population[orgIndex]->brain->readOutput(0)) + (Bit(group->population[orgIndex]->brain->readOutput(1)) << 1);
+				
+				//cout << output1 << endl;
 				// output 2 has info about the 3rd output bit, which either does nothing, or is eat.
 				if (alwaysEat) {
 					output2 = 1;
@@ -932,7 +935,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 						facing[orgIndex] = turnRight90(facing[orgIndex]); // Only allow 90 degree turns. 
 						scores[orgIndex] += rewardForTurn;
 						break;
-					case 3:  //move forward
+					}
+					//case 3:  // ALWAYS move forward, RAAHN Car style
 						if (getGridValue(grid, moveOnGrid(currentLocation[orgIndex], facing[orgIndex])) != WALL && getGridValue(orgPositionsGrid, moveOnGrid(currentLocation[orgIndex], facing[orgIndex])) != 1) {  // if the proposed move is not a wall and is not occupied by another org
 							scores[orgIndex] += rewardForMove;
 							if (getGridValue(grid, currentLocation[orgIndex]) == EMPTY) {  // if the current location is empty...
@@ -976,8 +980,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 								dataMap.Append(to_string(group->population[orgIndex]->ID) + "_moves", foodHereOnArrival[orgIndex]);
 							}
 						}
-						break;
-					}
+						//break;
+					//}
 				}
 
 				if (debug) {
