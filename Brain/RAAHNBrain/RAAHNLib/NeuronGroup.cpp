@@ -288,7 +288,7 @@ void NeuronGroup::printIncomingWeights()
 		{
 			std::cout << weight << " ";
 		}
-		std::cout << std::endl;
+		std::cout << std::endl << std::endl;
 	}
 }
 

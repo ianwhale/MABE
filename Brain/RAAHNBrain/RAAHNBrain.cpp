@@ -154,6 +154,8 @@ void RAAHNBrain::update()
 		nodes[outputNodesList[i]] = out;
 	}
 
+	cout << "<------------------------------------------------------------------->" << endl;
+
 	cout << "Weights before training: " << endl;
 	ann->printWeights();
 
@@ -163,6 +165,7 @@ void RAAHNBrain::update()
 
 	cout << "Weights after training: " << endl;
 	ann->printWeights();
+	cout << endl;
 }
 
 string RAAHNBrain::description()
