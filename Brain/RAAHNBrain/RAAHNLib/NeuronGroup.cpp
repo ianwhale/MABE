@@ -4,6 +4,7 @@
 #include "TrainingMethod.h"
 
 #include <vector>
+#include <iostream>
 #include <algorithm>
 #include <memory>
 
@@ -123,12 +124,15 @@ void NeuronGroup::ComputeSignal()
 		{
 			double noise = ann->NextDouble() * ann->getOutputNoiseRange() - ann->getOutputNoiseMagnitude();
 			neurons[i] = ann->activation(neurons[i]) + noise;
+
+			//std::cout << "First Neuron: " << neurons[0] << std::endl;
 		}
 	}
 	else
 	{
 		for (unsigned i = 0; i < neurons.size(); i++)
 			neurons[i] = ann->activation(neurons[i]);
+
 	}
 
 	computed = true;

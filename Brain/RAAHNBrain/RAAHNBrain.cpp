@@ -66,7 +66,7 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 
 	// Connect the groups.
 	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, learningRate, true);
-	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
+	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modIndex, sampleCount, 0.01 /*Value not used in Hebbian layer.*/, true);
 
 	// Add noise.
 	ann->SetOutputNoiseMagnitude(outputNoise);
@@ -83,24 +83,24 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	hiddenNodes = (PT == nullptr) ? hiddenNodesPL->lookup() : PT->lookupInt("BRAIN_RAAHN-hiddenNodes"); 
 	learningRate = (PT == nullptr) ? learningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-learningRate");
 
+
 	vector<double> hiddenWeights;
 	if (evolving)
 	{
 		auto genomeHandler = genome->newHandler(genome);
-		learningRate = genomeHandler->readDouble(0, 0.2);
-		hiddenNodes = genomeHandler->readInt(1, 8);
+		learningRate =  genomeHandler->readDouble(0.1, 0.2);
+		hiddenNodes =  genomeHandler->readInt(1, 8);
 
 		// historyBufferSize = genomeHandler->readInt( ... );
 		// sampleCount = genomeHandler->readInt( ... );
 
 		// Anything else ... ?
 
-		//cout << "Number of nodes in hidden layer: " << hiddenNodes << endl;
+		
 		for (unsigned i = 0; i < hiddenNodes * 8; i++) {
 			hiddenWeights.push_back(genomeHandler->readDouble(0, 1));
-			//cout << hiddenWeights.back() << " ";
 		}
-		//cout << endl;
+
 	}
 
 	ann = make_unique<NeuralNetwork>(historyBufferSize, outputNoise, weightNoise, DEFAULT_NOVELTY_USE);
@@ -129,6 +129,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	// Connect the groups.
 	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, learningRate, true, hiddenWeights);
 	ann->ConnectGroups(&hidden, &output, hebbTrain, (int)modIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
+	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
 
 	// Add noise.
 	ann->SetOutputNoiseMagnitude(outputNoise);
@@ -151,6 +152,7 @@ void RAAHNBrain::update()
 	for (int i = 0; i < nrOutNodes; i++)
 	{
 		out = round(ann->GetOutputValue(output_idx, i));  // Binary output for some worlds might not be the desired output... 
+		//cout << ann->GetOutputValue(output_idx, i) << endl;
 		nodes[outputNodesList[i]] = out;
 	}
 
