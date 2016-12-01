@@ -627,8 +627,6 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				// Need to start on a 90 degree multiple. (Even number)
 				int rando = Random::getIndex(8);
 
-				rando = (rando % 2 == 0) ? rando : rando - 1;
-
 				facing.push_back(rando);  // direction the agent is facing
 			} else {
 				facing.push_back(fixedStartFacing);
@@ -694,13 +692,13 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				orgList.pop_back();
 
 				pair<int, int> front_cord = moveOnGrid(currentLocation[orgIndex], facing[orgIndex]);
-				pair<int, int> left_cord = moveOnGrid(front_cord, turnLeft90(facing[orgIndex]));
-				pair<int, int> right_cord = moveOnGrid(front_cord, turnRight90(facing[orgIndex]));
+				pair<int, int> left_cord = moveOnGrid(currentLocation[orgIndex], turnLeft(facing[orgIndex]));
+				pair<int, int> right_cord = moveOnGrid(currentLocation[orgIndex], turnRight(facing[orgIndex]));
 				pair<int, int> c_1_cord = moveOnGrid(front_cord, facing[orgIndex]);
-				pair<int, int> c_4_cord = moveOnGrid(c_1_cord, turnLeft90(facing[orgIndex]));
-				pair<int, int> c_6_cord = moveOnGrid(c_4_cord, turnLeft90(facing[orgIndex]));
-				pair<int, int> c_5_cord = moveOnGrid(c_1_cord, turnRight90(facing[orgIndex]));
-				pair<int, int> c_7_cord = moveOnGrid(c_5_cord, turnRight90(facing[orgIndex]));
+				pair<int, int> c_4_cord = moveOnGrid(front_cord, turnLeft(facing[orgIndex]));
+				pair<int, int> c_6_cord = moveOnGrid(left_cord, turnLeft(facing[orgIndex]));
+				pair<int, int> c_5_cord = moveOnGrid(front_cord, turnRight(facing[orgIndex]));
+				pair<int, int> c_7_cord = moveOnGrid(right_cord, turnRight(facing[orgIndex]));
 
 				// here = getGridValue(grid, currentLocation[orgIndex]);
 				
@@ -942,11 +940,11 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					case 0:  //nothing
 						break;
 					case 1:  //turn left
-						facing[orgIndex] = turnLeft90(facing[orgIndex]); // Only allow 90 degree turns.
+						facing[orgIndex] = turnLeft(facing[orgIndex]); // Only allow 90 degree turns.
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 2:  //turn right
-						facing[orgIndex] = turnRight90(facing[orgIndex]); // Only allow 90 degree turns. 
+						facing[orgIndex] = turnRight(facing[orgIndex]); // Only allow 90 degree turns. 
 						scores[orgIndex] += rewardForTurn;
 						break;
 					}
