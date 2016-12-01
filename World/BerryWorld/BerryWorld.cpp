@@ -300,7 +300,7 @@ BerryWorld::BerryWorld(shared_ptr<ParametersTable> _PT) :
 	}
 
 	// Hard code for our experiment. 
-	inputNodesCount = 10; //senseDown * (foodTypes + senseVisited) + ((senseFront * (foodTypes + senseVisited)) + senseWalls + senseOther) + (2 * (senseFrontSides * (foodTypes + senseVisited + senseWalls + senseOther)));
+	inputNodesCount = 11; //senseDown * (foodTypes + senseVisited) + ((senseFront * (foodTypes + senseVisited)) + senseWalls + senseOther) + (2 * (senseFrontSides * (foodTypes + senseVisited + senseWalls + senseOther)));
 
 	cout << "BerryWorld requires brains with at least " << inputNodesCount + outputNodesCount << " nodes.\n";
 	if (inputNodesCount == 0) {
@@ -455,6 +455,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				}
 			} // at this point we should have some file names.
 			for (auto fileName : fileList) { // for each file name, select maps.
+				cout << fileName << endl;
 				auto file = worldMaps[fileName];
 				if (mapFileWhichMaps[1] == "all") { // fyi, [all,all]  add all maps from all of the files (same as just setting [all])
 					for (auto map : file) {
@@ -490,6 +491,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 			}
 		}
 	}
+
+
 
 	numWorlds = max(numWorlds, (int) worldList.size());
 	//cout << "numWorlds: " << numWorlds;
@@ -710,24 +713,33 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				c_5 = getGridValue(grid, c_5_cord);
 				c_7 = getGridValue(grid, c_7_cord);
 
-				group->population[orgIndex]->brain->setInput(2, front);
-				group->population[orgIndex]->brain->setInput(3, c_1);
-				group->population[orgIndex]->brain->setInput(4, leftFront);
-				group->population[orgIndex]->brain->setInput(5, rightFront);
-				group->population[orgIndex]->brain->setInput(6, c_4);
-				group->population[orgIndex]->brain->setInput(7, c_5);
-				group->population[orgIndex]->brain->setInput(8, c_6);
-				group->population[orgIndex]->brain->setInput(9, c_7);
+				group->population[orgIndex]->brain->setInput(3, front);
+				group->population[orgIndex]->brain->setInput(4, c_1);
+				group->population[orgIndex]->brain->setInput(5, leftFront);
+				group->population[orgIndex]->brain->setInput(6, rightFront);
+				group->population[orgIndex]->brain->setInput(7, c_4);
+				group->population[orgIndex]->brain->setInput(8, c_5);
+				group->population[orgIndex]->brain->setInput(9, c_6);
+				group->population[orgIndex]->brain->setInput(10, c_7);
 
 				// Set average as 2nd input. 
-				double sum = foodRewards[front - 1] + foodRewards[leftFront - 1] + foodRewards[rightFront - 1] + foodRewards[c_1 - 1]
-					+ foodRewards[c_4 - 1] + foodRewards[c_6 - 1] + foodRewards[c_5 - 1] + foodRewards[c_7 - 1];
-				group->population[orgIndex]->brain->setInput(0, sum / 8);
+				//double sum = foodRewards[front - 1] + foodRewards[leftFront - 1] + foodRewards[rightFront - 1] + foodRewards[c_1 - 1]
+				//	+ foodRewards[c_4 - 1] + foodRewards[c_6 - 1] + foodRewards[c_5 - 1] + foodRewards[c_7 - 1];
+				//group->population[orgIndex]->brain->setInput(0, sum / 8);
 
 				// Weighted average of last score, 3 scores ago, and 5 scores ago. 
 				double ave = (history[current] + history[(current - 3) % 5] + history[(current - 5) % 5]) / 9;
 
-				group->population[orgIndex]->brain->setInput(1, ave);
+				group->population[orgIndex]->brain->setInput(0, ave); // USED TO BE 1
+
+				double leftSum = foodRewards[front - 1] + foodRewards[leftFront - 1] + foodRewards[c_1 - 1] + foodRewards[c_4 - 1] + foodRewards[c_6 - 1]
+					- foodRewards[rightFront - 1] - foodRewards[c_5 - 1] - foodRewards[c_7 - 1];
+				double rightSum = foodRewards[front - 1] + foodRewards[rightFront - 1] + foodRewards[c_1 - 1] + foodRewards[c_5 - 1] + foodRewards[c_7 - 1]
+					- foodRewards[leftFront - 1] - foodRewards[c_4 - 1] - foodRewards[c_6 - 1];
+
+				group->population[orgIndex]->brain->setInput(1, leftSum / 8);
+				group->population[orgIndex]->brain->setInput(2, rightSum / 8);
+
 
 				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
 				//if (senseWalls) {
@@ -855,9 +867,11 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 				// set output values
 				// output1 has info about the first 2 output bits these [00 eat, 10 left, 01 right, 11 move]
-				output1 = Bit(group->population[orgIndex]->brain->readOutput(0)) + (Bit(group->population[orgIndex]->brain->readOutput(1)) << 1);
-				
-				//cout << output1 << endl;
+				output1 = Bit(group->population[orgIndex]->brain->readOutput(1)) + (Bit(group->population[orgIndex]->brain->readOutput(0)) << 1);
+				// READOUTPUT(0) IS TURN LEFT
+				// potential new, triple output movement rule. Take 3 output nodes, one for left, right, and no turn, take max output for decision
+
+				cout << output1;
 				// output 2 has info about the 3rd output bit, which either does nothing, or is eat.
 				if (alwaysEat) {
 					output2 = 1;

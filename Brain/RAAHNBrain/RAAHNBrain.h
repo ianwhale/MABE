@@ -45,8 +45,12 @@ public:
 	virtual void initalizeGenome(shared_ptr<AbstractGenome> _genome) override;
 
 private:
-	int output_idx;
-	unsigned modIndex;
+	int output_idx; // unused
+	int leftOut_idx;
+	int rightOut_idx;
+	unsigned modIndex; // unused
+	unsigned leftModIndex;
+	unsigned rightModIndex;
 	unique_ptr<NeuralNetwork> ann;
 };
 
