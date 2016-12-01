@@ -691,13 +691,13 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				orgList.pop_back();
 
 				pair<int, int> front_cord = moveOnGrid(currentLocation[orgIndex], facing[orgIndex]);
-				pair<int, int> left_cord = moveOnGrid(front_cord, turnLeft90(facing[orgIndex]));
-				pair<int, int> right_cord = moveOnGrid(front_cord, turnRight90(facing[orgIndex]));
+				pair<int, int> left_cord = moveOnGrid(currentLocation[orgIndex], turnLeft(facing[orgIndex]));
+				pair<int, int> right_cord = moveOnGrid(currentLocation[orgIndex], turnRight(facing[orgIndex]));
 				pair<int, int> c_1_cord = moveOnGrid(front_cord, facing[orgIndex]);
-				pair<int, int> c_4_cord = moveOnGrid(c_1_cord, turnLeft90(facing[orgIndex]));
-				pair<int, int> c_6_cord = moveOnGrid(c_4_cord, turnLeft90(facing[orgIndex]));
-				pair<int, int> c_5_cord = moveOnGrid(c_1_cord, turnRight90(facing[orgIndex]));
-				pair<int, int> c_7_cord = moveOnGrid(c_5_cord, turnRight90(facing[orgIndex]));
+				pair<int, int> c_4_cord = moveOnGrid(front_cord, turnLeft(facing[orgIndex]));
+				pair<int, int> c_6_cord = moveOnGrid(left_cord, turnLeft(facing[orgIndex]));
+				pair<int, int> c_5_cord = moveOnGrid(front_cord, turnRight(facing[orgIndex]));
+				pair<int, int> c_7_cord = moveOnGrid(right_cord, turnRight(facing[orgIndex]));
 
 				// here = getGridValue(grid, currentLocation[orgIndex]);
 				
