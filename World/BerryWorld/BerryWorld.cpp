@@ -624,8 +624,6 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				// Need to start on a 90 degree multiple. (Even number)
 				int rando = Random::getIndex(8);
 
-				rando = (rando % 2 == 0) ? rando : rando - 1;
-
 				facing.push_back(rando);  // direction the agent is facing
 			} else {
 				facing.push_back(fixedStartFacing);
@@ -928,11 +926,11 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 					case 0:  //nothing
 						break;
 					case 1:  //turn left
-						facing[orgIndex] = turnLeft90(facing[orgIndex]); // Only allow 90 degree turns.
+						facing[orgIndex] = turnLeft(facing[orgIndex]); // Only allow 90 degree turns.
 						scores[orgIndex] += rewardForTurn;
 						break;
 					case 2:  //turn right
-						facing[orgIndex] = turnRight90(facing[orgIndex]); // Only allow 90 degree turns. 
+						facing[orgIndex] = turnRight(facing[orgIndex]); // Only allow 90 degree turns. 
 						scores[orgIndex] += rewardForTurn;
 						break;
 					}
