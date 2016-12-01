@@ -279,3 +279,4 @@ MABE.sln
 MABE.vcxproj
 MABE.vcxproj.filters
 *.csv
+*.cfg
