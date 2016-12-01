@@ -267,6 +267,7 @@ double TrainingMethod::HebbianTrain(int modIndex, double learningRate, NeuralNet
 	shared_ptr<NeuronGroup> outGroup, vector<shared_ptr<Connection>> connections, vector<double> biasWeights)
 {
 	double modSig = ModulationSignal::GetSignal(modIndex);
+	//std::cout << "ModSignal: " << modIndex << " " << modSig << std::endl;
 
 	//If the modulation signal is zero there is no weight change.
 	if (modSig == ModulationSignal::NO_MODULATION)
@@ -282,12 +283,14 @@ double TrainingMethod::HebbianTrain(int modIndex, double learningRate, NeuralNet
 		double noise = (ann->NextDouble() * ann->getWeightNoiseRange()) - ann->getWeightNoiseMagnitude();
 
 		double weightDelta = (modSig * learningRate * normalizedInput * normalizedOutput) + noise;
+		//std::cout << weightDelta << " ";
 
 		if (abs(connections[i]->weight + weightDelta) < weightCap)
 			connections[i]->weight += weightDelta;
 		else
 			connections[i]->weight = sign(connections[i]->weight) * weightCap;
 	}
+	//std::cout << std::endl;
 
 	if (biasWeights.size() != 0)
 	{

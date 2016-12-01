@@ -143,8 +143,8 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 
 	// Connect the groups.
 	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, learningRate, true, hiddenWeights);
-	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
-	ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
+	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
+	ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
 
 	// Add noise.
@@ -161,7 +161,12 @@ void RAAHNBrain::update()
 	}
 
 	ann->AddExperience(inputs);
+	//cout << "1: " << ann->GetOutputValue(leftOut_idx, 0) << " " << ann->GetOutputValue(rightOut_idx, 0) << endl;
 	ann->PropagateSignal();
+	//cout << "2: " << ann->GetOutputValue(leftOut_idx, 0) << " " << ann->GetOutputValue(rightOut_idx, 0) << endl;
+	//ann->PropagateSignal();
+	//cout << "3: " << ann->GetOutputValue(leftOut_idx, 0) << " " << ann->GetOutputValue(rightOut_idx, 0) << endl;
+	//ann->PropagateSignal();
 
 	//double out;
 	// Set the results. 
@@ -172,8 +177,8 @@ void RAAHNBrain::update()
 	//	nodes[outputNodesList[i]] = out;
 	//}
 
-	nodes[outputNodesList[0]] = ann->GetOutputValue(leftOut_idx, 0);
-	nodes[outputNodesList[1]] = ann->GetOutputValue(rightOut_idx, 0);
+	nodes[outputNodesList[0]] = round(ann->GetOutputValue(leftOut_idx, 0));
+	nodes[outputNodesList[1]] = round(ann->GetOutputValue(rightOut_idx, 0));
 
 	//cout << ann->GetOutputValue(leftOut_idx, 0) << " " << ann->GetOutputValue(rightOut_idx, 0) << endl;
 
@@ -187,8 +192,10 @@ void RAAHNBrain::update()
 	//ModulationSignal::SetSignal(modIndex, signal);
 
 
-	double leftSignal = (nodes[inputNodesList[1]]);
-	double rightSignal = (nodes[inputNodesList[2]]);
+	double leftSignal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2;
+	double rightSignal = (nodes[inputNodesList[0]] + nodes[inputNodesList[2]]) / 2;
+	//double leftSignal = nodes[inputNodesList[1]];
+	//double rightSignal = nodes[inputNodesList[2]];
 	//cout << leftSignal << " " << rightSignal << endl;
 	ModulationSignal::SetSignal(leftModIndex, leftSignal);
 	ModulationSignal::SetSignal(rightModIndex, rightSignal);

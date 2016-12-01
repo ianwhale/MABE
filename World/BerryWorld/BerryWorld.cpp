@@ -730,13 +730,13 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 				group->population[orgIndex]->brain->setInput(0, ave); // USED TO BE 1
 
-				double leftSum = foodRewards[front - 1] + foodRewards[leftFront - 1] + foodRewards[c_1 - 1] + foodRewards[c_4 - 1] + foodRewards[c_6 - 1]
+				double leftSum =  foodRewards[leftFront - 1] + foodRewards[c_4 - 1] + foodRewards[c_6 - 1]
 					- foodRewards[rightFront - 1] - foodRewards[c_5 - 1] - foodRewards[c_7 - 1];
-				double rightSum = foodRewards[front - 1] + foodRewards[rightFront - 1] + foodRewards[c_1 - 1] + foodRewards[c_5 - 1] + foodRewards[c_7 - 1]
+				double rightSum =  foodRewards[rightFront - 1]  + foodRewards[c_5 - 1] + foodRewards[c_7 - 1]
 					- foodRewards[leftFront - 1] - foodRewards[c_4 - 1] - foodRewards[c_6 - 1];
 
-				group->population[orgIndex]->brain->setInput(1, leftSum / 8);
-				group->population[orgIndex]->brain->setInput(2, rightSum / 8);
+				group->population[orgIndex]->brain->setInput(1, leftSum / 6);
+				group->population[orgIndex]->brain->setInput(2, rightSum / 6);
 
 
 				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
@@ -865,7 +865,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 				// set output values
 				// output1 has info about the first 2 output bits these [00 eat, 10 left, 01 right, 11 move]
-				output1 = Bit(group->population[orgIndex]->brain->readOutput(1)) + (Bit(group->population[orgIndex]->brain->readOutput(0)) << 1);
+				output1 = Bit(group->population[orgIndex]->brain->readOutput(0)) + (Bit(group->population[orgIndex]->brain->readOutput(1)) << 1);
 				// READOUTPUT(0) IS TURN LEFT
 				// potential new, triple output movement rule. Take 3 output nodes, one for left, right, and no turn, take max output for decision
 
