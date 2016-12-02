@@ -177,8 +177,8 @@ void RAAHNBrain::update()
 	//	nodes[outputNodesList[i]] = out;
 	//}
 
-	nodes[outputNodesList[0]] = round(ann->GetOutputValue(leftOut_idx, 0));
-	nodes[outputNodesList[1]] = round(ann->GetOutputValue(rightOut_idx, 0));
+	nodes[outputNodesList[0]] = ann->GetOutputValue(leftOut_idx, 0);
+	nodes[outputNodesList[1]] = ann->GetOutputValue(rightOut_idx, 0);
 
 	//cout << ann->GetOutputValue(leftOut_idx, 0) << " " << ann->GetOutputValue(rightOut_idx, 0) << endl;
 
