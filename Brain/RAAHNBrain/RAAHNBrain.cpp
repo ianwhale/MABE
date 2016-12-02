@@ -12,6 +12,7 @@
 #include "./RAAHNLib/NeuronGroup.h"
 #include <cmath>
 #include <iostream>
+#include <utility>
 
 shared_ptr<ParameterLink<double>> RAAHNBrain::outputNoisePL = Parameters::register_parameter("BRAIN_RAAHN-outputNoise", 0.1, "noise added to output values.");
 shared_ptr<ParameterLink<double>> RAAHNBrain::weightNoisePL = Parameters::register_parameter("BRAIN_RAAHN-weightNoise", 0.1, "noise added to weight values.");
@@ -152,12 +153,37 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	ann->SetWeightNoiseMagnitude(weightNoise);
 }
 
+double convert_food_value(const int & food)
+{
+	switch(food)
+	{
+	case 0:
+		return -.8;
+		break;
+	case 1:
+		return -.4;
+		break;
+	case 2:
+		return 0;
+		break;
+	case 3:
+		return .4;
+		break;
+	case 4:
+		return .8;
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+
 void RAAHNBrain::update()
 {
 	vector<double> inputs;
 	for (int i = 3; i < nrInNodes; i++) // Get inputs.
 	{ 
-		inputs.push_back(nodes[inputNodesList[i]]);
+		inputs.push_back(convert_food_value(nodes[inputNodesList[i]]));
 	}
 
 	ann->AddExperience(inputs);
