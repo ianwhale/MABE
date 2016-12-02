@@ -265,8 +265,6 @@ BerryWorld::BerryWorld(shared_ptr<ParametersTable> _PT) :
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	if (mapFileList.size() > 0) {
-		cout << "BerryWorld loading maps..." << endl;
-
 		for (auto fileName : mapFileList) {
 			worldMaps[fileName] = map<string, WorldMap>();
 			ifstream FILE(fileName);
@@ -378,7 +376,6 @@ void BerryWorld::printGrid(vector<int> grid, pair<int, int> loc, int facing) {
 }
 
 void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize, bool debug) {
-
 	int numWorlds = 1;
 	int howManyFiles;
 	int howManyMaps;
@@ -396,6 +393,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 	// make list of fileName,mapName pairs that this org (population) will visit
 
 	if (mapFileList.size() != 0) {
+
 		if (mapFileWhichMaps.size() == 1 && mapFileWhichMaps[0] == "all") { // if method is all, append all of the map names to worldList.
 			for (auto file : worldMaps) { // for every map in worldMaps (i.e. every file)
 				for (auto map : file.second) { // for every map in that file
@@ -405,6 +403,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 		}
 
 		if (mapFileWhichMaps.size() == 1 && mapFileWhichMaps[0] == "random") { // if method is all, append all of the map names to worldList.
+
 			auto item1 = worldMaps.begin();
 			advance(item1, Random::getIndex((int) worldMaps.size()));
 			string filePick = item1->first;
@@ -497,7 +496,6 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 	numWorlds = max(numWorlds, (int) worldList.size());
 	//cout << "numWorlds: " << numWorlds;
 	for (int worldCount = 0; worldCount < numWorlds; worldCount++) {
-
 		vector<double> scores(group->population.size(), 0);
 		int MAXSCORE = 1; // scores will be divided by MAXSCORE. If relativeScoring is true MAXSCORE will be set (see relativeScoring/MAXSCORE below)
 		int FOODCOUNT = 0; // used if modulateWorldTime is set
@@ -721,8 +719,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				group->population[orgIndex]->brain->setInput(10, c_7);
 
 				// Set average as 2nd input. 
-				//double sum = foodRewards[front - 1] + foodRewards[leftFront - 1] + foodRewards[rightFront - 1] + foodRewards[c_1 - 1]
-				//	+ foodRewards[c_4 - 1] + foodRewards[c_6 - 1] + foodRewards[c_5 - 1] + foodRewards[c_7 - 1];
+				//double sum = foodRewards[front ] + foodRewards[leftFront ] + foodRewards[rightFront ] + foodRewards[c_1 ]
+				//	+ foodRewards[c_4 ] + foodRewards[c_6 ] + foodRewards[c_5 ] + foodRewards[c_7 ];
 				//group->population[orgIndex]->brain->setInput(0, sum / 8);
 
 				// Weighted average of last score, 3 scores ago, and 5 scores ago. 
@@ -730,10 +728,10 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 				group->population[orgIndex]->brain->setInput(0, ave); // USED TO BE 1
 
-				double leftSum =  foodRewards[leftFront - 1] + foodRewards[c_4 - 1] + foodRewards[c_6 - 1]
-					- foodRewards[rightFront - 1] - foodRewards[c_5 - 1] - foodRewards[c_7 - 1];
-				double rightSum =  foodRewards[rightFront - 1]  + foodRewards[c_5 - 1] + foodRewards[c_7 - 1]
-					- foodRewards[leftFront - 1] - foodRewards[c_4 - 1] - foodRewards[c_6 - 1];
+				double leftSum =  foodRewards[leftFront ] + foodRewards[c_4 ] + foodRewards[c_6 ]
+					- foodRewards[rightFront ] - foodRewards[c_5 ] - foodRewards[c_7 ];
+				double rightSum =  foodRewards[rightFront ]  + foodRewards[c_5 ] + foodRewards[c_7 ]
+					- foodRewards[leftFront ] - foodRewards[c_4 ] - foodRewards[c_6 ];
 
 				group->population[orgIndex]->brain->setInput(1, leftSum / 6);
 				group->population[orgIndex]->brain->setInput(2, rightSum / 6);
@@ -846,8 +844,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 						cout << group->population[orgIndex]->brain->readInput(i) << " ";
 					}
 
-					//cout << "\nFood values: " << foodRewards[front - 1] << " " << foodRewards[c_1 - 1] << " " << foodRewards[leftFront - 1] << " " << foodRewards[rightFront - 1]
-					//	<< " " << foodRewards[c_4 - 1] << " " << foodRewards[c_5 - 1] << " " << foodRewards[c_6 - 1] << " " << foodRewards[c_7 - 1] << endl;
+					//cout << "\nFood values: " << foodRewards[front ] << " " << foodRewards[c_1 ] << " " << foodRewards[leftFront ] << " " << foodRewards[rightFront ]
+					//	<< " " << foodRewards[c_4 ] << " " << foodRewards[c_5 ] << " " << foodRewards[c_6 ] << " " << foodRewards[c_7 ] << endl;
 
 					cout << "\nlast outNodes: ";
 					for (int i = 0; i < outputNodesCount; i++) {
@@ -869,7 +867,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				// READOUTPUT(0) IS TURN LEFT
 				// potential new, triple output movement rule. Take 3 output nodes, one for left, right, and no turn, take max output for decision
 
-				cout << output1;
+				//cout << output1;
 				// output 2 has info about the 3rd output bit, which either does nothing, or is eat.
 				if (alwaysEat) {
 					output2 = 1;
@@ -906,7 +904,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				}
 
 				if (output2 == 1) {  // if org tried to eat
-					int foodHere = getGridValue(grid, currentLocation[orgIndex]) - 1;
+					int foodHere = getGridValue(grid, currentLocation[orgIndex]);
 					if ((recordFoodList && foodHere != 0) || (recordFoodList && recordFoodListEatEmpty)) {
 						group->population[orgIndex]->dataMap.Append("foodList", foodHere);  // record that org ate food (or tried to at any rate)
 					}
