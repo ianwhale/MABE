@@ -19,7 +19,8 @@ shared_ptr<ParameterLink<double>> RAAHNBrain::weightNoisePL = Parameters::regist
 shared_ptr<ParameterLink<int>> RAAHNBrain::sampleCountPL = Parameters::register_parameter("BRAIN_RAAHN-sampleCount", 10, "number of samples used from novelty buffer when training the autoencoder (unsigned).");
 shared_ptr<ParameterLink<int>> RAAHNBrain::historyBufferSizePL = Parameters::register_parameter("BRAIN_RAAHN-historyBufferSize", 25, "history buffer size (unsigned).");
 shared_ptr<ParameterLink<int>> RAAHNBrain::hiddenNodesPL = Parameters::register_parameter("BRAIN_RAAHN-hiddenNodes", 7, "number of hidden nodes (unsigned).");
-shared_ptr<ParameterLink<double>> RAAHNBrain::learningRatePL = Parameters::register_parameter("BRAIN_RAAHN-learningRate", 0.1, "learning rate for Hebbian layer.");
+shared_ptr<ParameterLink<double>> RAAHNBrain::encoderLearningRatePL = Parameters::register_parameter("BRAIN_RAAHN-encoderLearningRate", 0.1, "learning rate for Autoencoder layer.");
+shared_ptr<ParameterLink<double>> RAAHNBrain::hebbianLearningRatePL = Parameters::register_parameter("BRAIN_RAAHN-hebbianLearningRate", 1.0, "learning rate for Hebbian layer.");
 shared_ptr<ParameterLink<bool>> RAAHNBrain::evolvingPL = Parameters::register_parameter("BRAIN_RAAHN-evolving", true, "should we evolve the learners? If false, no genome manipulation will be done and only in-lifetime learning will occur.");
 
 using namespace std;
@@ -33,7 +34,8 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	sampleCount = (PT == nullptr) ? sampleCountPL->lookup() : PT->lookupInt("BRAIN_RAAHN-sampleCount");
 	historyBufferSize = (PT == nullptr) ? historyBufferSizePL->lookup() : PT->lookupInt("BRAIN_RAAHN-historyBufferSize");
 	hiddenNodes = (PT == nullptr) ? hiddenNodesPL->lookup() : PT->lookupInt("BRAIN_RAAHN-hiddenNodes");
-	learningRate = (PT == nullptr) ? learningRatePL->lookup() : PT->lookupInt("BRAIN_RAAHN-learningRate");
+	encoderLearningRate = (PT == nullptr) ? encoderLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-encoderLearningRate");
+	hebbianLearningRate = (PT == nullptr) ? hebbianLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-hebbianLearningRate");
 
 	ann = make_unique<NeuralNetwork>(historyBufferSize, outputNoise, weightNoise, DEFAULT_NOVELTY_USE);
 
@@ -69,9 +71,9 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	rightModIndex = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, learningRate, true);
-	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
-	ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, encoderLearningRate, true);
+	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, hebbianLearningRate, true);
+	//ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
 
 	// Add noise.
@@ -87,14 +89,16 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	sampleCount = (PT == nullptr) ? sampleCountPL->lookup() : PT->lookupInt("BRAIN_RAAHN-sampleCount");
 	historyBufferSize = (PT == nullptr) ? historyBufferSizePL->lookup() : PT->lookupInt("BRAIN_RAAHN-historyBufferSize");
 	hiddenNodes = (PT == nullptr) ? hiddenNodesPL->lookup() : PT->lookupInt("BRAIN_RAAHN-hiddenNodes"); 
-	learningRate = (PT == nullptr) ? learningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-learningRate");
+	encoderLearningRate = (PT == nullptr) ? encoderLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-encoderLearningRate");
+	hebbianLearningRate = (PT == nullptr) ? hebbianLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-hebbianLearningRate");
 
 
 	vector<double> hiddenWeights;
 	if (evolving)
 	{
 		auto genomeHandler = genome->newHandler(genome);
-		learningRate =  genomeHandler->readDouble(1, 4);
+		encoderLearningRate =  genomeHandler->readDouble(0.1, 0.3);
+		hebbianLearningRate = genomeHandler->readDouble(1, 5);
 		hiddenNodes =  genomeHandler->readInt(1, 8);
 
 		historyBufferSize = genomeHandler->readInt( 40, 80 );
@@ -143,11 +147,11 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	rightModIndex = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, 0.1f, true, hiddenWeights);
-	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, encoderLearningRate, true, hiddenWeights);
+	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, hebbianLearningRate, true);
 	//ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
-	cout << "Learning Rate: " << learningRate << endl;
+	cout << "Encoder/Hebbian Learning Rates: " << encoderLearningRate << " " << hebbianLearningRate << endl;
 	// Add noise.
 	ann->SetOutputNoiseMagnitude(outputNoise);
 	ann->SetWeightNoiseMagnitude(weightNoise);
@@ -223,7 +227,7 @@ void RAAHNBrain::update()
 	//double leftSignal = nodes[inputNodesList[1]];
 	//double rightSignal = nodes[inputNodesList[2]];
 
-	double signal =nodes[inputNodesList[1]];
+	double signal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2;
 
 	//cout << leftSignal << " " << rightSignal << endl;
 	ModulationSignal::SetSignal(leftModIndex, signal);

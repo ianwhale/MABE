@@ -727,9 +727,12 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				//group->population[orgIndex]->brain->setInput(0, sum / 8);
 
 				// Weighted average of last score, 3 scores ago, and 5 scores ago. 
-				double ave = (5*history[current] + 3*history[(current - 3) % 5] + history[(current - 5) % 5]) / 9;
+				double ave = (5*history[current] + 3*history[(current+5 - 2) % 5] + history[(current+5 - 4) % 5]) / 9;
 
 				group->population[orgIndex]->brain->setInput(0, ave);
+
+				//cout << current << " " << (current+5 - 2) % 5 << " " << (current+5 - 4) % 5 << endl;
+				//cout << history[current] << " " << history[(current+5-2)%5] << " " << history[(current+5-4)%5] << endl;
 
 				
 
@@ -956,7 +959,8 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 						//cout << "  ate food: " << foodHere << " reward: " << foodRewards[foodHere] << " total score: " << scores[orgIndex] << endl;
 					}
 
-					history[current] = lastFood[orgIndex]; // Set history buffer.
+					history[current] = foodRewards[foodHere]; // Set history buffer.
+					current = (current + 1) % history.size();
 
 				} else {
 					if (recordFoodList && recordFoodListNoEat) {
@@ -1193,8 +1197,6 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 	if (saveOrgActions) { // if saveOrgActions save the output.
 		dataMap.writeToFile(visualizationFileName+"_actions.txt");
 	}
-
-	current = (current + 1) % history.size();
 }
 
 void BerryWorld::SaveWorldState(string fileName, vector<int> grid, vector<int> vistedGrid, vector<pair<int, int>> currentLocation, vector<int> facing, bool reset) {

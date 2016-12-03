@@ -18,7 +18,8 @@ class RAAHNBrain : public AbstractBrain
 public:
 	static shared_ptr<ParameterLink<double>> outputNoisePL;
 	static shared_ptr<ParameterLink<double>> weightNoisePL;
-	static shared_ptr<ParameterLink<double>> learningRatePL;
+	static shared_ptr<ParameterLink<double>> encoderLearningRatePL;
+	static shared_ptr<ParameterLink<double>> hebbianLearningRatePL;
 	static shared_ptr<ParameterLink<int>> sampleCountPL;
 	static shared_ptr<ParameterLink<int>> historyBufferSizePL;
 	static shared_ptr<ParameterLink<int>> hiddenNodesPL;
@@ -26,7 +27,8 @@ public:
 
 	double outputNoise;
 	double weightNoise;
-	double learningRate;
+	double encoderLearningRate;
+	double hebbianLearningRate;
 	int hiddenNodes;
 	int sampleCount;
 	int historyBufferSize;
