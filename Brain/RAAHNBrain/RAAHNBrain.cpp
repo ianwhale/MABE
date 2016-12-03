@@ -97,8 +97,8 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 		learningRate =  genomeHandler->readDouble(1, 4);
 		hiddenNodes =  genomeHandler->readInt(1, 8);
 
-		// historyBufferSize = genomeHandler->readInt( ... );
-		// sampleCount = genomeHandler->readInt( ... );
+		historyBufferSize = genomeHandler->readInt( 40, 80 );
+		sampleCount = genomeHandler->readInt( 5, 25 );
 
 		// Anything else ... ?
 
@@ -147,7 +147,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
-
+	cout << "Learning Rate: " << learningRate << endl;
 	// Add noise.
 	ann->SetOutputNoiseMagnitude(outputNoise);
 	ann->SetWeightNoiseMagnitude(weightNoise);

@@ -729,7 +729,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				// Weighted average of last score, 3 scores ago, and 5 scores ago. 
 				double ave = (5*history[current] + 3*history[(current - 3) % 5] + history[(current - 5) % 5]) / 9;
 
-				group->population[orgIndex]->brain->setInput(0, ave); // USED TO BE 1
+				group->population[orgIndex]->brain->setInput(0, ave);
 
 				
 
