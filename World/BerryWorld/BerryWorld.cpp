@@ -382,6 +382,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 	vector<double> summedScores(group->population.size(), 0);
 
+	double previousConeAvg = 0;
 	vector<double> history(5, 0);
 	int current = 0; 
 
@@ -699,7 +700,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				pair<int, int> c_7_cord = moveOnGrid(right_cord, turnRight(facing[orgIndex]));
 
 				// here = getGridValue(grid, currentLocation[orgIndex]);
-				
+
 				front = getGridValue(grid, front_cord);
 				leftFront = getGridValue(grid, left_cord);
 				rightFront = getGridValue(grid, right_cord);
@@ -719,22 +720,40 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				group->population[orgIndex]->brain->setInput(10, c_7);
 
 				// Set average as 2nd input. 
-				//double sum = foodRewards[front ] + foodRewards[leftFront ] + foodRewards[rightFront ] + foodRewards[c_1 ]
-				//	+ foodRewards[c_4 ] + foodRewards[c_6 ] + foodRewards[c_5 ] + foodRewards[c_7 ];
+				double sum = foodRewards[front] +foodRewards[leftFront] + foodRewards[rightFront] + foodRewards[c_1]
+				 +foodRewards[c_4] + foodRewards[c_6] + foodRewards[c_5] + foodRewards[c_7];
+				double coneAvg = sum / 8;
+
 				//group->population[orgIndex]->brain->setInput(0, sum / 8);
 
 				// Weighted average of last score, 3 scores ago, and 5 scores ago. 
-				double ave = (history[current] + history[(current - 3) % 5] + history[(current - 5) % 5]) / 9;
+				double ave = (5*history[current] + 3*history[(current - 3) % 5] + history[(current - 5) % 5]) / 9;
 
 				group->population[orgIndex]->brain->setInput(0, ave); // USED TO BE 1
 
+				
+
+				group->population[orgIndex]->brain->setInput(1, coneAvg-previousConeAvg);
+
+
+				//cout << coneAvg - previousConeAvg << endl;
+				previousConeAvg = coneAvg;
+
+
+
+
+				/*
 				double leftSum =  foodRewards[leftFront ] + foodRewards[c_4 ] + foodRewards[c_6 ]
 					- foodRewards[rightFront ] - foodRewards[c_5 ] - foodRewards[c_7 ];
 				double rightSum =  foodRewards[rightFront ]  + foodRewards[c_5 ] + foodRewards[c_7 ]
 					- foodRewards[leftFront ] - foodRewards[c_4 ] - foodRewards[c_6 ];
+				
 
 				group->population[orgIndex]->brain->setInput(1, leftSum / 6);
 				group->population[orgIndex]->brain->setInput(2, rightSum / 6);
+				*/
+
+
 
 
 				//nodesAssignmentCounter = 0;  // get ready to start assigning inputs
@@ -863,7 +882,19 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 
 				// set output values
 				// output1 has info about the first 2 output bits these [00 eat, 10 left, 01 right, 11 move]
-				output1 = Bit(group->population[orgIndex]->brain->readOutput(0)) + (Bit(group->population[orgIndex]->brain->readOutput(1)) << 1);
+				//output1 = Bit(group->population[orgIndex]->brain->readOutput(0)) + (Bit(group->population[orgIndex]->brain->readOutput(1)) << 1);
+				
+				double turnOutput = group->population[orgIndex]->brain->readOutput(0)*2-1;
+				if (turnOutput < -0.3) {
+					output1 = 1;
+				}
+				else if (turnOutput > 0.3) {
+					output1 = 2;
+				}
+				else {
+					output1 = 3;
+				}
+				
 				// READOUTPUT(0) IS TURN LEFT
 				// potential new, triple output movement rule. Take 3 output nodes, one for left, right, and no turn, take max output for decision
 

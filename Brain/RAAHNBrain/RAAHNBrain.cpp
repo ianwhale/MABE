@@ -94,7 +94,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	if (evolving)
 	{
 		auto genomeHandler = genome->newHandler(genome);
-		learningRate =  genomeHandler->readDouble(0.1, 0.2);
+		learningRate =  genomeHandler->readDouble(1, 4);
 		hiddenNodes =  genomeHandler->readInt(1, 8);
 
 		// historyBufferSize = genomeHandler->readInt( ... );
@@ -143,9 +143,9 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	rightModIndex = ModulationSignal::AddSignal();
 
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, learningRate, true, hiddenWeights);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, 0.1f, true, hiddenWeights);
 	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
-	ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
+	//ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
 
 	// Add noise.
@@ -204,7 +204,7 @@ void RAAHNBrain::update()
 	//}
 
 	nodes[outputNodesList[0]] = ann->GetOutputValue(leftOut_idx, 0);
-	nodes[outputNodesList[1]] = ann->GetOutputValue(rightOut_idx, 0);
+	//nodes[outputNodesList[1]] = ann->GetOutputValue(rightOut_idx, 0);
 
 	//cout << ann->GetOutputValue(leftOut_idx, 0) << " " << ann->GetOutputValue(rightOut_idx, 0) << endl;
 
@@ -218,13 +218,16 @@ void RAAHNBrain::update()
 	//ModulationSignal::SetSignal(modIndex, signal);
 
 
-	double leftSignal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2;
-	double rightSignal = (nodes[inputNodesList[0]] + nodes[inputNodesList[2]]) / 2;
+	//double leftSignal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2;
+	//double rightSignal = (nodes[inputNodesList[0]] + nodes[inputNodesList[2]]) / 2;
 	//double leftSignal = nodes[inputNodesList[1]];
 	//double rightSignal = nodes[inputNodesList[2]];
+
+	double signal =nodes[inputNodesList[1]];
+
 	//cout << leftSignal << " " << rightSignal << endl;
-	ModulationSignal::SetSignal(leftModIndex, leftSignal);
-	ModulationSignal::SetSignal(rightModIndex, rightSignal);
+	ModulationSignal::SetSignal(leftModIndex, signal);
+	//ModulationSignal::SetSignal(rightModIndex, rightSignal);
 	ann->Train();
 
 	// cout << "Weights after training: " << endl;
