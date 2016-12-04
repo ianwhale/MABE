@@ -955,7 +955,7 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 						//cout << "  ate food: " << foodHere << " reward: " << foodRewards[foodHere] << " total score: " << scores[orgIndex] << endl;
 						setGridValue(grid, currentLocation[orgIndex], 0);					// clear this location
 					} else { // no food here!
-						scores[orgIndex] += foodRewards[foodHere]; // you ate a food... good for you! (or bad)
+						//scores[orgIndex] += foodRewards[foodHere]; // you ate a food... good for you! (or bad)
 						//cout << "  ate food: " << foodHere << " reward: " << foodRewards[foodHere] << " total score: " << scores[orgIndex] << endl;
 					}
 

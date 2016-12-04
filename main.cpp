@@ -170,7 +170,8 @@ int main(int argc, const char * argv[]) {
 				//cout << "  optimize done\n";
 			}
 
-			cout << "update: " << Global::update - 1 << "   maxFitness: " << groups[defaultGroup]->optimizer->maxFitness << "" << endl;
+			cout << "update: " << Global::update - 1 << "   maxFitness: " << groups[defaultGroup]->optimizer->maxFitness 
+				<<  " medianFitness : " << groups[defaultGroup]->optimizer->medianFitness << "" << endl;
 		}
 
 		// the run is finished... flush any data that has not been output yet
