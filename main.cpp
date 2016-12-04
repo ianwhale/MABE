@@ -151,6 +151,8 @@ int main(int argc, const char * argv[]) {
 		// run mode - evolution loop
 		//////////////////
 
+		vector<double> medians;
+
 		while (!groups[defaultGroup]->archivist->finished) {
 
 			// evaluate population in world.
@@ -170,9 +172,19 @@ int main(int argc, const char * argv[]) {
 				//cout << "  optimize done\n";
 			}
 
-			cout << "update: " << Global::update - 1 << "   maxFitness: " << groups[defaultGroup]->optimizer->maxFitness 
-				<<  " medianFitness : " << groups[defaultGroup]->optimizer->medianFitness << "" << endl;
+			cout << "update: " << Global::update - 1 << "   maxFitness: " << groups[defaultGroup]->optimizer->maxFitness
+				<< " medianFitness : " << groups[defaultGroup]->optimizer->medianFitness << "" << endl;
+			
+			medians.push_back(groups[defaultGroup]->optimizer->medianFitness);
 		}
+		
+		ofstream file("medians.csv");
+		file << "medians" << endl;
+		for (int i = 0; i < medians.size(); i++)
+		{
+			file << medians[i] << endl;
+		}
+		file.close();
 
 		// the run is finished... flush any data that has not been output yet
 		groups[defaultGroup]->archive(1);

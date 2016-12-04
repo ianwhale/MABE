@@ -36,7 +36,8 @@ void TournamentOptimizer::makeNextGeneration(vector<shared_ptr<Organism>> &popul
 
 	vector<double> sortedScores = Scores;
 	sort(sortedScores.begin(), sortedScores.end());
-	medianFitness = sortedScores[sortedScores.size() / 2];
+	size_t sz = sortedScores.size();
+	medianFitness = (sz % 2 == 1) ? sortedScores[sz / 2] : (sortedScores[floor(sz/2) + 1] + sortedScores[floor(sz/2)]) / 2;
 
 	while (nextPopulation.size() < population.size()) {
 		int winner, challanger;
