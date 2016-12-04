@@ -76,7 +76,7 @@ public:
 	//Sample count refers to how many training samples should be used each time Train() is called.
 	bool ConnectGroups(NeuronGroup::Identifier *input, NeuronGroup::Identifier *output,
 		ConnectionGroup::TrainFunctionType trainMethod, int modulationIndex,
-		unsigned sampleCount, double learningRate, bool useBias, vector<double> & presetWeights = vector<double>());
+		unsigned sampleCount, double learningRate, bool useBias, vector<double> & presetWeights);
 
 	//Gets the number of neurons in a group. Returns 0 if the group is invalid.
 	unsigned GetGroupNeuronCount(NeuronGroup::Identifier *ident);

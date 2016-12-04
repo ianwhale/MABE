@@ -53,7 +53,7 @@ private:
 	unsigned modIndex; // unused
 	unsigned leftModIndex;
 	unsigned rightModIndex;
-	unique_ptr<NeuralNetwork> ann;
+	shared_ptr<NeuralNetwork> ann;
 };
 
 inline shared_ptr<AbstractBrain> RAAHNBrain_brainFactory(int ins, int outs, int hidden, shared_ptr<ParametersTable> PT) {

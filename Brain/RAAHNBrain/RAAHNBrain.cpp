@@ -37,7 +37,7 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	encoderLearningRate = (PT == nullptr) ? encoderLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-encoderLearningRate");
 	hebbianLearningRate = (PT == nullptr) ? hebbianLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-hebbianLearningRate");
 
-	ann = make_unique<NeuralNetwork>(historyBufferSize, outputNoise, weightNoise, DEFAULT_NOVELTY_USE);
+	ann = make_shared<NeuralNetwork>(historyBufferSize, outputNoise, weightNoise, DEFAULT_NOVELTY_USE);
 
 	int input_idx = ann->AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
 	int hidden_idx = ann->AddNeuronGroup(hiddenNodes, NeuronGroup::Type::HIDDEN);
@@ -70,9 +70,11 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	leftModIndex = ModulationSignal::AddSignal();
 	rightModIndex = ModulationSignal::AddSignal();
 
+	vector<double> empty;
+	
 	// Connect the groups.
-	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, encoderLearningRate, true);
-	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, hebbianLearningRate, true);
+	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, encoderLearningRate, true, empty);
+	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, hebbianLearningRate, true, empty);
 	//ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, 0.1 /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
 
@@ -113,7 +115,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 
 	}
 
-	ann = make_unique<NeuralNetwork>(historyBufferSize, outputNoise, weightNoise, DEFAULT_NOVELTY_USE);
+	ann = make_shared<NeuralNetwork>(historyBufferSize, outputNoise, weightNoise, DEFAULT_NOVELTY_USE);
 
 	int input_idx = ann->AddNeuronGroup(_nrInNodes, NeuronGroup::Type::INPUT);
 	int hidden_idx = ann->AddNeuronGroup(hiddenNodes, NeuronGroup::Type::HIDDEN);
@@ -146,9 +148,11 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	leftModIndex = ModulationSignal::AddSignal();
 	rightModIndex = ModulationSignal::AddSignal();
 
+	vector<double> empty; 
+	
 	// Connect the groups.
 	ann->ConnectGroups(&input, &hidden, autoTrain, (int)modIndex, sampleCount, encoderLearningRate, true, hiddenWeights);
-	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, hebbianLearningRate, true);
+	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, hebbianLearningRate, true, empty);
 	//ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
 	//cout << "Encoder/Hebbian Learning Rates: " << encoderLearningRate << " " << hebbianLearningRate << endl;
