@@ -35,6 +35,7 @@ class AbstractOptimizer {
  public:
 	const shared_ptr<ParametersTable> PT;
 	double maxFitness;
+	double medianFitness;
 	AbstractOptimizer(shared_ptr<ParametersTable> _PT = nullptr) : PT(_PT) {
 		maxFitness = 0;
 	}

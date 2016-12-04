@@ -34,6 +34,10 @@ void TournamentOptimizer::makeNextGeneration(vector<shared_ptr<Organism>> &popul
 	int best = findGreatestInVector(Scores);
 	maxFitness = Scores[best];
 
+	vector<double> sortedScores = Scores;
+	sort(sortedScores.begin(), sortedScores.end());
+	medianFitness = sortedScores[sortedScores.size() / 2];
+
 	while (nextPopulation.size() < population.size()) {
 		int winner, challanger;
 		if ((int) nextPopulation.size() < elitismLPL->lookup()) {
