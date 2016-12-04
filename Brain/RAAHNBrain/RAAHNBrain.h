@@ -20,6 +20,7 @@ public:
 	static shared_ptr<ParameterLink<double>> weightNoisePL;
 	static shared_ptr<ParameterLink<double>> encoderLearningRatePL;
 	static shared_ptr<ParameterLink<double>> hebbianLearningRatePL;
+	static shared_ptr<ParameterLink<double>> foodHistoryRatioPL;
 	static shared_ptr<ParameterLink<int>> sampleCountPL;
 	static shared_ptr<ParameterLink<int>> historyBufferSizePL;
 	static shared_ptr<ParameterLink<int>> hiddenNodesPL;
@@ -29,6 +30,7 @@ public:
 	double weightNoise;
 	double encoderLearningRate;
 	double hebbianLearningRate;
+	double foodHistoryRatio; // percentage of modulation taken from previous foods eaten
 	int hiddenNodes;
 	int sampleCount;
 	int historyBufferSize;

@@ -888,10 +888,10 @@ void BerryWorld::runWorld(shared_ptr<Group> group, bool analyse, bool visualize,
 				//output1 = Bit(group->population[orgIndex]->brain->readOutput(0)) + (Bit(group->population[orgIndex]->brain->readOutput(1)) << 1);
 				
 				double turnOutput = group->population[orgIndex]->brain->readOutput(0)*2-1;
-				if (turnOutput < -0.3) {
+				if (turnOutput < -1/3) {
 					output1 = 1;
 				}
-				else if (turnOutput > 0.3) {
+				else if (turnOutput > 1/3) {
 					output1 = 2;
 				}
 				else {

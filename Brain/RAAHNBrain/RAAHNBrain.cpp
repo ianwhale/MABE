@@ -21,6 +21,7 @@ shared_ptr<ParameterLink<int>> RAAHNBrain::historyBufferSizePL = Parameters::reg
 shared_ptr<ParameterLink<int>> RAAHNBrain::hiddenNodesPL = Parameters::register_parameter("BRAIN_RAAHN-hiddenNodes", 7, "number of hidden nodes (unsigned).");
 shared_ptr<ParameterLink<double>> RAAHNBrain::encoderLearningRatePL = Parameters::register_parameter("BRAIN_RAAHN-encoderLearningRate", 0.1, "learning rate for Autoencoder layer.");
 shared_ptr<ParameterLink<double>> RAAHNBrain::hebbianLearningRatePL = Parameters::register_parameter("BRAIN_RAAHN-hebbianLearningRate", 1.0, "learning rate for Hebbian layer.");
+shared_ptr<ParameterLink<double>> RAAHNBrain::foodHistoryRatioPL = Parameters::register_parameter("BRAIN_RAAHN-foodHistoryRatio", 0.5, "percentage of modulation that is taken from food consumption history.");
 shared_ptr<ParameterLink<bool>> RAAHNBrain::evolvingPL = Parameters::register_parameter("BRAIN_RAAHN-evolving", true, "should we evolve the learners? If false, no genome manipulation will be done and only in-lifetime learning will occur.");
 
 using namespace std;
@@ -36,6 +37,7 @@ RAAHNBrain::RAAHNBrain(int _nrInNodes, int _nrOutNodes, int _nrHiddenNodes, shar
 	hiddenNodes = (PT == nullptr) ? hiddenNodesPL->lookup() : PT->lookupInt("BRAIN_RAAHN-hiddenNodes");
 	encoderLearningRate = (PT == nullptr) ? encoderLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-encoderLearningRate");
 	hebbianLearningRate = (PT == nullptr) ? hebbianLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-hebbianLearningRate");
+	foodHistoryRatio = (PT == nullptr) ? foodHistoryRatioPL->lookup() : PT->lookupDouble("BRAIN_RAAHN-foodHistoryRatio");
 
 	ann = make_shared<NeuralNetwork>(historyBufferSize, outputNoise, weightNoise, DEFAULT_NOVELTY_USE);
 
@@ -93,6 +95,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	hiddenNodes = (PT == nullptr) ? hiddenNodesPL->lookup() : PT->lookupInt("BRAIN_RAAHN-hiddenNodes"); 
 	encoderLearningRate = (PT == nullptr) ? encoderLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-encoderLearningRate");
 	hebbianLearningRate = (PT == nullptr) ? hebbianLearningRatePL->lookup() : PT->lookupDouble("BRAIN_RAAHN-hebbianLearningRate");
+	foodHistoryRatio = (PT == nullptr) ? foodHistoryRatioPL->lookup() : PT->lookupDouble("BRAIN_RAAHN-foodHistoryRatio");
 
 
 	vector<double> hiddenWeights;
@@ -105,6 +108,8 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 
 		historyBufferSize = genomeHandler->readInt( 40, 80 );
 		sampleCount = genomeHandler->readInt( 5, 25 );
+
+		foodHistoryRatio = genomeHandler->readDouble(0.0, 1.0);
 
 		// Anything else ... ?
 
@@ -231,7 +236,7 @@ void RAAHNBrain::update()
 	//double leftSignal = nodes[inputNodesList[1]];
 	//double rightSignal = nodes[inputNodesList[2]];
 
-	double signal = (nodes[inputNodesList[0]] + nodes[inputNodesList[1]]) / 2;
+	double signal = (foodHistoryRatio*nodes[inputNodesList[0]] + (1-foodHistoryRatio)*nodes[inputNodesList[1]]);
 
 	//cout << leftSignal << " " << rightSignal << endl;
 	ModulationSignal::SetSignal(leftModIndex, signal);
