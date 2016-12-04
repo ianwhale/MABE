@@ -151,7 +151,7 @@ RAAHNBrain::RAAHNBrain(shared_ptr<AbstractGenome> genome, int _nrInNodes, int _n
 	ann->ConnectGroups(&hidden, &leftOutput, hebbTrain, (int)leftModIndex, sampleCount, hebbianLearningRate, true);
 	//ann->ConnectGroups(&hidden, &rightOutput, hebbTrain, (int)rightModIndex, sampleCount, learningRate /*Value not used in Hebbian layer.*/, true);
 	//ann->ConnectGroups(&input, &output, hebbTrain, (int)modIndex, sampleCount, 0.1, true);
-	cout << "Encoder/Hebbian Learning Rates: " << encoderLearningRate << " " << hebbianLearningRate << endl;
+	//cout << "Encoder/Hebbian Learning Rates: " << encoderLearningRate << " " << hebbianLearningRate << endl;
 	// Add noise.
 	ann->SetOutputNoiseMagnitude(outputNoise);
 	ann->SetWeightNoiseMagnitude(weightNoise);
